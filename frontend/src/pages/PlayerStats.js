@@ -141,7 +141,7 @@ function PlayerStats() {
 
                 const statsArray = Object.values(allStats).map(s => ({
                     ...s,
-                    attackPoints: s.goals * 2 + s.assists,
+                    attackPoints: s.goals + s.assists,
                     mom: 0, // MOM placeholder
                     attendance: completedMatches.length > 0
                         ? Math.round((s.matches / completedMatches.length) * 100)
@@ -324,7 +324,7 @@ function PlayerStats() {
 
                 {/* 그리드 테이블 헤더 (클릭 정렬) */}
                 <div className="ps-table-head">
-                    <div className="ps-col-rank">#</div>
+                    <div className="ps-col-rank">순위</div>
                     <div className="ps-col-player">선수</div>
                     {COLUMNS.map(col => (
                         <div
@@ -357,7 +357,7 @@ function PlayerStats() {
                                     style={isTopScorer ? { background: 'rgba(176,141,42,0.03)' } : undefined}
                                     onClick={() => selectPlayer(player)}
                                 >
-                                    <div className="ps-col-rank">{ranks[index]}</div>
+                                    <div className="ps-col-rank">{ranks[index]}.</div>
                                     <div className="ps-col-player">
                                         {renderAvatar(player, 36)}
                                         <div className="ps-player-info">
@@ -367,14 +367,14 @@ function PlayerStats() {
                                             </span>
                                         </div>
                                     </div>
-                                    <div className="ps-col-stat">{player.matches}</div>
-                                    <div className="ps-col-stat">{player.quarters}</div>
-                                    <div className="ps-col-stat ps-col-goals">{player.goals}</div>
-                                    <div className="ps-col-stat">{player.assists}</div>
-                                    <div className="ps-col-stat">{player.attackPoints}</div>
-                                    <div className="ps-col-stat">{player.mom}</div>
-                                    <div className="ps-col-stat ps-col-rate">{player.attendance}%</div>
-                                    <div className="ps-col-stat ps-col-gpg">{player.goalsPerGame}</div>
+                                    {COLUMNS.map(col => (
+                                        <div
+                                            key={col.key}
+                                            className={`ps-col-stat ${sortBy === col.key ? 'ps-col-sorted' : ''} ${col.key === 'goals' ? 'ps-col-goals' : ''} ${col.key === 'attendance' ? 'ps-col-rate' : ''} ${col.key === 'goalsPerGame' ? 'ps-col-gpg' : ''}`}
+                                        >
+                                            {col.key === 'attendance' ? `${player[col.key]}%` : player[col.key]}
+                                        </div>
+                                    ))}
                                 </div>
                             );
                         })
@@ -489,15 +489,20 @@ function PlayerStats() {
                     cursor: pointer;
                     user-select: none;
                     transition: color 0.15s;
+                    position: relative;
                 }
                 .ps-col-sortable:hover {
                     color: var(--color-text, #333);
                 }
                 .ps-col-sorted {
-                    color: var(--color-gold, #b08d2a) !important;
+                    color: #2563eb !important;
                 }
                 .ps-sort-arrow {
-                    font-size: 10px;
+                    font-size: 8px;
+                    position: absolute;
+                    bottom: -2px;
+                    left: 50%;
+                    transform: translateX(-50%);
                 }
                 .ps-table-body {
                     max-height: 600px;
@@ -519,7 +524,7 @@ function PlayerStats() {
 
                 /* Columns */
                 .ps-col-rank {
-                    font-size: 14px;
+                    font-size: 17px;
                     font-weight: 500;
                     color: var(--color-text-muted, #999);
                     text-align: center;
@@ -529,6 +534,9 @@ function PlayerStats() {
                     align-items: center;
                     gap: 12px;
                     min-width: 0;
+                }
+                .ps-table-head .ps-col-player {
+                    font-size: 17px;
                 }
                 .ps-player-info {
                     display: flex;
@@ -552,7 +560,7 @@ function PlayerStats() {
                 }
                 .ps-col-stat {
                     text-align: center;
-                    font-size: 14px;
+                    font-size: 17px;
                     font-weight: 500;
                     color: var(--color-text, #333);
                 }
@@ -560,11 +568,11 @@ function PlayerStats() {
                     font-weight: 700;
                 }
                 .ps-col-rate {
-                    font-size: 12px;
+                    font-size: 14px;
                 }
                 .ps-col-gpg {
                     font-weight: 600;
-                    color: var(--color-gold, #b08d2a);
+                    color: var(--color-text, #333);
                 }
 
                 .ps-empty-row {
@@ -691,7 +699,7 @@ function PlayerStats() {
                         font-size: 11px;
                     }
                     .ps-col-stat {
-                        font-size: 13px;
+                        font-size: 15px;
                     }
                     .ps-detail-header {
                         padding: 16px;

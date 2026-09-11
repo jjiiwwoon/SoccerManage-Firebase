@@ -451,6 +451,25 @@ body {
     color: white;
 }
 
+/* 승무패 필터 탭 active 색상 */
+.filter-tab.active.filter-tab-win {
+    background-color: var(--color-win);
+    border-color: var(--color-win);
+    color: white;
+}
+
+.filter-tab.active.filter-tab-draw {
+    background-color: var(--color-draw);
+    border-color: var(--color-draw);
+    color: white;
+}
+
+.filter-tab.active.filter-tab-lose {
+    background-color: var(--color-lose);
+    border-color: var(--color-lose);
+    color: white;
+}
+
 /* ===== Search Input ===== */
 .search-input {
     padding: 10px 16px;

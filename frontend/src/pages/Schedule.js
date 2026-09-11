@@ -128,7 +128,7 @@ const scStyles = `
     font-size: 0.88rem;
     font-weight: 600;
     line-height: 1;
-    margin-bottom: auto;
+    margin-bottom: 0;
 }
 
 .sc-cal-match-info {
@@ -137,16 +137,32 @@ const scStyles = `
     align-items: center;
     justify-content: center;
     flex: 1;
-    gap: 2px;
+    gap: 1px;
     width: 100%;
     padding-bottom: 2px;
 }
 
-.sc-cal-match-vs {
-    font-size: 0.68rem;
-    font-weight: 600;
-    color: var(--color-text, #1a1a2e);
+.sc-cal-match-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #3b82f6;
     line-height: 1.3;
+    letter-spacing: 0.3px;
+}
+
+.sc-cal-match-vs {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #8b95a5;
+    line-height: 1.5;
+    text-align: center;
+}
+
+.sc-cal-match-opponent {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-text, #1a1a2e);
+    line-height: 1.5;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -155,20 +171,11 @@ const scStyles = `
 }
 
 .sc-cal-match-result {
-    font-size: 0.65rem;
+    font-size: 1rem;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.5;
     border-radius: 3px;
     padding: 1px 5px;
-}
-
-.sc-cal-match-label {
-    font-size: 0.6rem;
-    font-weight: 700;
-    color: #3b82f6;
-    line-height: 1.2;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
 }
 
 /* Legend */
@@ -215,19 +222,44 @@ const scStyles = `
 }
 
 .sc-match-body {
-    padding: 16px 18px;
+    padding: 16px 10px;
 }
 
-.sc-match-date {
-    font-size: 0.8rem;
-    color: #8b95a5;
+.sc-match-info-center {
+    text-align: center;
     margin-bottom: 14px;
+}
+
+.sc-match-info-date {
+    font-size: 1.0rem;
+    color: #8b95a5;
+    font-weight: 600;
+}
+
+.sc-match-info-location {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 1.1rem;
+    color: #8b95a5;
+    margin-top: 4px;
 }
 
 .sc-match-status-text {
     font-size: 0.82rem;
     font-weight: 600;
     margin-bottom: 4px;
+}
+
+.sc-match-memo-box {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: var(--color-light, #f3f4f6);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #8b95a5;
+    line-height: 1.5;
+    white-space: pre-wrap;
 }
 
 .sc-match-teams {
@@ -244,7 +276,7 @@ const scStyles = `
 }
 
 .sc-team-name {
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: var(--color-text, #1a1a2e);
     overflow: hidden;
@@ -253,7 +285,7 @@ const scStyles = `
 }
 
 .sc-team-label {
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     color: #8b95a5;
     font-weight: 600;
     letter-spacing: 1px;
@@ -272,14 +304,14 @@ const scStyles = `
 
 .sc-score-text {
     font-family: 'Oswald', sans-serif;
-    font-size: 1.6rem;
+    font-size: 1.7rem;
     font-weight: 700;
     color: var(--color-text, #1a1a2e);
-    letter-spacing: 2px;
+    letter-spacing: 3px;
 }
 
 .sc-match-vs {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #8b95a5;
     letter-spacing: 2px;
@@ -287,9 +319,9 @@ const scStyles = `
 
 .sc-result-pill {
     display: inline-block;
-    font-size: 0.7rem;
+    font-size: 1rem;
     font-weight: 700;
-    padding: 2px 10px;
+    padding: 4px 14px;
     border-radius: 10px;
     letter-spacing: 0.5px;
 }
@@ -306,36 +338,11 @@ const scStyles = `
     color: #dc2626;
 }
 
-/* Tags */
-.sc-match-tags {
-    display: flex;
-    gap: 8px;
-    margin-top: 14px;
-    flex-wrap: wrap;
-}
-.sc-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 0.75rem;
-    color: #8b95a5;
-    background: var(--color-light, #f3f4f6);
-    padding: 3px 10px;
-    border-radius: 6px;
-}
-
-/* Match card header (date + action button) */
-.sc-match-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-}
-
+/* Match card header-btn */
 .sc-match-header-btn {
     padding: 4px 12px;
     border-radius: 6px;
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
@@ -355,13 +362,14 @@ const scStyles = `
     opacity: 0.9;
 }
 
-/* Match actions (delete) */
+/* Match actions — bottom right */
 .sc-match-actions {
     display: flex;
     gap: 8px;
     margin-top: 14px;
     padding-top: 12px;
     border-top: 1px solid var(--color-border, #e5e7eb);
+    justify-content: flex-end;
 }
 
 .sc-match-actions .sc-btn-danger {
@@ -386,37 +394,43 @@ const scStyles = `
     border-top: 1px solid var(--color-border, #e5e7eb);
 }
 .sc-scorers-title {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #8b95a5;
-    margin-bottom: 8px;
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #3b82f6;
+    border: 1.5px solid #3b82f6;
+    border-radius: 6px;
+    padding: 2px 10px;
+    margin-bottom: 10px;
     letter-spacing: 0.3px;
 }
 .sc-scorers-list {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
 }
 .sc-scorer-item {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 4px 8px;
-    border-radius: 6px;
-    background: var(--color-light, #f3f4f6);
+    gap: 6px;
+    padding: 2px 0;
 }
 .sc-scorer-name {
-    font-size: 0.82rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-text, #1a1a2e);
 }
+.sc-scorer-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+}
 .sc-scorer-goals {
-    font-size: 0.78rem;
+    font-size: 0.92rem;
     font-weight: 700;
-    color: var(--color-gold, #b08d2a);
+    color: #3b82f6;
 }
 .sc-no-scorers {
-    font-size: 0.78rem;
+    font-size: 0.85rem;
     color: #8b95a5;
     text-align: center;
     padding: 4px 0;
@@ -527,11 +541,14 @@ const scStyles = `
     .sc-cal-match-vs {
         font-size: 0.58rem;
     }
+    .sc-cal-match-opponent {
+        font-size: 0.62rem;
+    }
     .sc-cal-match-result {
-        font-size: 0.55rem;
+        font-size: 0.58rem;
     }
     .sc-cal-match-label {
-        font-size: 0.52rem;
+        font-size: 0.65rem;
     }
 }
 `;
@@ -548,6 +565,7 @@ function Schedule() {
     // 모달 상태
     const [showRegisterForm, setShowRegisterForm] = useState(false);
     const [showResultForm, setShowResultForm] = useState(false);
+    const [editingMatchId, setEditingMatchId] = useState(null);
 
     // 일정 등록 폼
     const [newSchedule, setNewSchedule] = useState({
@@ -584,11 +602,19 @@ function Schedule() {
             ]);
             setMatches(matchData);
             setMembers(memberData);
+            return matchData;
         } catch (err) {
             console.error('데이터 로딩 실패:', err);
+            return null;
         } finally {
             setLoading(false);
         }
+    }
+
+    // 멤버 이름 조회 헬퍼
+    function getMemberName(memberId) {
+        const member = members.find(m => m.id === memberId);
+        return member ? member.name : '알 수 없음';
     }
 
     // 날짜 유틸
@@ -782,6 +808,7 @@ function Schedule() {
         const dateStr = selectedDate
             ? `${year}-${String(month + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`
             : `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        setEditingMatchId(null);
         setNewSchedule({
             matchDate: dateStr,
             matchTime: '',
@@ -794,6 +821,21 @@ function Schedule() {
         setShowRegisterForm(true);
     }
 
+    // ========== 일정 수정 ==========
+    function openEditForm(match) {
+        setEditingMatchId(match.id);
+        setNewSchedule({
+            matchDate: match.matchDate || '',
+            matchTime: match.matchTime || '',
+            matchEndTime: match.matchEndTime || '',
+            location: match.location || '',
+            opponent: match.opponent || '',
+            memo: match.memo || '',
+        });
+        syncDateSelects(match.matchDate);
+        setShowRegisterForm(true);
+    }
+
     async function handleRegisterSubmit(e) {
         e.preventDefault();
         if (!newSchedule.matchDate || !newSchedule.opponent) {
@@ -801,23 +843,53 @@ function Schedule() {
             return;
         }
         try {
-            await createMatch({
+            const payload = {
                 matchDate: newSchedule.matchDate,
                 matchTime: newSchedule.matchTime || null,
                 matchEndTime: newSchedule.matchEndTime || null,
                 location: newSchedule.location || null,
                 opponent: newSchedule.opponent,
                 memo: newSchedule.memo || null,
-                ourScore: null,
-                opponentScore: null,
-            });
+            };
+
+            if (editingMatchId) {
+                // 수정 모드
+                await updateMatch(editingMatchId, {
+                    ...payload,
+                    ourScore: selectedMatch?.ourScore ?? null,
+                    opponentScore: selectedMatch?.opponentScore ?? null,
+                });
+            } else {
+                // 등록 모드
+                await createMatch({
+                    ...payload,
+                    ourScore: null,
+                    opponentScore: null,
+                });
+            }
+
             setShowRegisterForm(false);
-            await fetchData();
-            // 등록한 날짜 선택
+            setEditingMatchId(null);
+            const updatedMatches = await fetchData();
+            // 등록/수정한 날짜 선택
             const day = parseInt(newSchedule.matchDate.split('-')[2]);
-            handleDateClick(day);
+            const matchMonth = parseInt(newSchedule.matchDate.split('-')[1]) - 1;
+            const matchYear = parseInt(newSchedule.matchDate.split('-')[0]);
+            if (matchYear !== year || matchMonth !== month) {
+                setCurrentDate(new Date(matchYear, matchMonth, 1));
+            }
+            setSelectedDate(day);
+            if (updatedMatches) {
+                const dateStr = newSchedule.matchDate;
+                const updatedMatch = updatedMatches.find(m => m.matchDate === dateStr);
+                setSelectedMatch(updatedMatch || null);
+                if (updatedMatch) {
+                    const stats = await getMatchStats(updatedMatch.id);
+                    setMatchStats(stats);
+                }
+            }
         } catch (err) {
-            alert('일정 등록에 실패했습니다.');
+            alert(editingMatchId ? '일정 수정에 실패했습니다.' : '일정 등록에 실패했습니다.');
         }
     }
 
@@ -881,7 +953,22 @@ function Schedule() {
             return;
         }
 
+        // 득점 합계 검증
+        const ourScoreNum = parseInt(resultData.ourScore);
+        const totalPlayerGoals = playerStatInputs
+            .filter(p => p.played)
+            .reduce((sum, p) => sum + (p.goals || 0), 0);
+        if (ourScoreNum !== totalPlayerGoals) {
+            const proceed = window.confirm(
+                `팀 득점(${ourScoreNum})과 개인 득점 합계(${totalPlayerGoals})가 다릅니다.\n그래도 저장하시겠습니까?`
+            );
+            if (!proceed) return;
+        }
+
         try {
+            const newOurScore = parseInt(resultData.ourScore);
+            const newOpponentScore = parseInt(resultData.opponentScore);
+
             // 1. 경기 결과 업데이트
             await updateMatch(selectedMatch.id, {
                 matchDate: selectedMatch.matchDate,
@@ -890,8 +977,8 @@ function Schedule() {
                 opponent: selectedMatch.opponent,
                 location: selectedMatch.location,
                 memo: selectedMatch.memo,
-                ourScore: parseInt(resultData.ourScore),
-                opponentScore: parseInt(resultData.opponentScore),
+                ourScore: newOurScore,
+                opponentScore: newOpponentScore,
             });
 
             // 2. 기존 스탯 삭제
@@ -908,10 +995,20 @@ function Schedule() {
             }
 
             setShowResultForm(false);
-            await fetchData();
-            if (selectedDate) {
-                handleDateClick(selectedDate);
-            }
+
+            // 즉시 카드 업데이트
+            setSelectedMatch(prev => ({
+                ...prev,
+                ourScore: newOurScore,
+                opponentScore: newOpponentScore,
+            }));
+
+            // 스탯 다시 로드
+            const stats = await getMatchStats(selectedMatch.id);
+            setMatchStats(stats);
+
+            // 전체 데이터 새로고침
+            fetchData();
         } catch (err) {
             alert('결과 입력에 실패했습니다.');
             console.error(err);
@@ -989,22 +1086,21 @@ function Schedule() {
                     onClick={() => handleDateClick(day)}
                 >
                     <span className="sc-cal-day" style={{ color: getDayColor(dayOfWeek) }}>{day}</span>
-                    {match && (
-                        <div className="sc-cal-match-info">
-                            {result === 'upcoming' ? (
-                                <>
-                                    <span className="sc-cal-match-label">Match Day</span>
-                                    <span className="sc-cal-match-vs">vs {match.opponent}</span>
-                                </>
-                            ) : (
-                                <>
-                                    <span className="sc-cal-match-vs">vs {match.opponent}</span>
+                                        {match && (
+                        <>
+                            {result === 'upcoming' && (
+                                <span className="sc-cal-match-label">Match Day</span>
+                            )}
+                            <div className="sc-cal-match-info">
+                                <span className="sc-cal-match-vs">vs</span>
+                                <span className="sc-cal-match-opponent">{match.opponent}</span>
+                                {result !== 'upcoming' && (
                                     <span className="sc-cal-match-result" style={{ color: getResultColor(result) }}>
                                         {getResultLabel(result)}
                                     </span>
-                                </>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                        </>
                     )}
                 </div>
             );
@@ -1037,23 +1133,28 @@ function Schedule() {
                     style={{ background: getResultGradient(result) }}
                 ></div>
                 <div className="sc-match-body">
-                    {/* Header: Date + Action Button */}
-                    <div className="sc-match-header">
-                        <div className="sc-match-date" style={{ marginBottom: 0 }}>{formatMatchDate(match.matchDate)}</div>
-                        {isUpcoming ? (
-                            <button className="sc-match-header-btn sc-btn-primary" onClick={openResultForm}>
-                                결과 입력
-                            </button>
-                        ) : (
-                            <button className="sc-match-header-btn" onClick={openResultForm}>
-                                결과 수정
-                            </button>
+                    {/* 상단 정보: 날짜+시간, 장소 (가운데 정렬) */}
+                    <div className="sc-match-info-center">
+                        <div className="sc-match-info-date">
+                            {formatMatchDate(match.matchDate)}
+                            {match.matchTime && (
+                                <span> {match.matchTime}{match.matchEndTime && `~${match.matchEndTime}`}</span>
+                            )}
+                        </div>
+                        {match.location && (
+                            <div className="sc-match-info-location">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                    <circle cx="12" cy="10" r="3"/>
+                                </svg>
+                                {match.location}
+                            </div>
                         )}
                     </div>
 
                     {/* Status for upcoming */}
                     {isUpcoming && (
-                        <div className="sc-match-status-text" style={{ color: '#b08d2a' }}>
+                        <div className="sc-match-status-text" style={{ color: '#b08d2a', textAlign: 'center' }}>
                             &middot; 예정
                         </div>
                     )}
@@ -1086,30 +1187,18 @@ function Schedule() {
                         </div>
                     </div>
 
-                    {/* Tags */}
-                    <div className="sc-match-tags">
-                        {match.location && (
-                            <span className="sc-tag">
-                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
-                                    <circle cx="12" cy="10" r="3"/>
-                                </svg>
-                                {match.location}
-                            </span>
-                        )}
-                        {match.matchTime && (
-                            <span className="sc-tag">
-                                {match.matchTime}
-                                {match.matchEndTime && `~${match.matchEndTime}`}
-                            </span>
-                        )}
-                    </div>
+                    {/* 메모 (회색 박스) */}
+                    {match.memo && (
+                        <div className="sc-match-memo-box">
+                            {match.memo}
+                        </div>
+                    )}
 
                     {/* Goal Scorers (for completed matches) */}
                     {!isUpcoming && (() => {
                         const scorers = matchStats
                             .filter(s => s.goals > 0)
-                            .sort((a, b) => b.goals - a.goals || (a.member?.name || '').localeCompare(b.member?.name || '', 'ko'));
+                            .sort((a, b) => b.goals - a.goals || (a.member?.name || getMemberName(a.memberId)).localeCompare(b.member?.name || getMemberName(b.memberId), 'ko'));
                         return (
                             <div className="sc-scorers-section">
                                 <div className="sc-scorers-title">득점자</div>
@@ -1117,7 +1206,8 @@ function Schedule() {
                                     <div className="sc-scorers-list">
                                         {scorers.map((s, i) => (
                                             <div key={i} className="sc-scorer-item">
-                                                <span className="sc-scorer-name">{s.member?.name || '알 수 없음'}</span>
+                                                <span className="sc-scorer-name">{s.member?.name || getMemberName(s.memberId)}</span>
+                                                <span className="sc-scorer-icon">⚽</span>
                                                 <span className="sc-scorer-goals">{s.goals}골</span>
                                             </div>
                                         ))}
@@ -1129,8 +1219,20 @@ function Schedule() {
                         );
                     })()}
 
-                    {/* Delete button */}
+                    {/* Action buttons — 오른쪽 아래 */}
                     <div className="sc-match-actions">
+                        {isUpcoming ? (
+                            <button className="sc-match-header-btn sc-btn-primary" onClick={openResultForm}>
+                                결과 입력
+                            </button>
+                        ) : (
+                            <button className="sc-match-header-btn" onClick={openResultForm}>
+                                결과 수정
+                            </button>
+                        )}
+                        <button className="sc-match-header-btn" onClick={() => openEditForm(match)}>
+                            일정 수정
+                        </button>
                         <button className="sc-btn-danger" onClick={handleDeleteMatch}>
                             삭제
                         </button>
@@ -1286,7 +1388,7 @@ function Schedule() {
                 <div className="modal-overlay" onClick={() => setShowRegisterForm(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <form onSubmit={handleRegisterSubmit}>
-                            <div className="form-title">일정 등록</div>
+                            <div className="form-title">{editingMatchId ? '일정 수정' : '일정 등록'}</div>
                             <div className="form-grid">
                                 <div className="form-group" style={{ gridColumn: '1 / -1' }}>
                                     <label className="form-label date-label-with-icon">
@@ -1431,12 +1533,13 @@ function Schedule() {
                             </div>
                             <div className="form-group" style={{ marginTop: '12px' }}>
                                 <label className="form-label">메모</label>
-                                <input
-                                    type="text"
+                                <textarea
                                     className="form-input"
                                     placeholder="메모"
                                     value={newSchedule.memo}
                                     onChange={(e) => setNewSchedule({ ...newSchedule, memo: e.target.value })}
+                                    rows={2}
+                                    style={{ resize: 'vertical', minHeight: '40px', fontFamily: 'inherit' }}
                                 />
                             </div>
                             <div className="form-actions">
@@ -1448,7 +1551,7 @@ function Schedule() {
                                     취소
                                 </button>
                                 <button type="submit" className="btn btn-gold">
-                                    등록
+                                    {editingMatchId ? '수정' : '등록'}
                                 </button>
                             </div>
                         </form>
@@ -1539,18 +1642,33 @@ function Schedule() {
                                         <tbody>
                                             {(() => {
                                                 const isEditMode = getResult(selectedMatch) !== 'upcoming';
+                                                const firstPlayedIdx = isEditMode ? playerStatInputs.findIndex(p => p.played) : -1;
                                                 const firstNonPlayedIdx = isEditMode ? playerStatInputs.findIndex(p => !p.played) : -1;
                                                 return playerStatInputs.map((player, index) => (
                                                     <React.Fragment key={player.memberId}>
+                                                        {isEditMode && index === firstPlayedIdx && firstPlayedIdx >= 0 && (
+                                                            <tr>
+                                                                <td colSpan="6" style={{
+                                                                    textAlign: 'center',
+                                                                    fontSize: '0.75rem',
+                                                                    fontWeight: 600,
+                                                                    color: '#3b82f6',
+                                                                    padding: '8px 0 4px',
+                                                                    borderBottom: '2px solid rgba(59, 130, 246, 0.3)',
+                                                                }}>
+                                                                    — 참석 —
+                                                                </td>
+                                                            </tr>
+                                                        )}
                                                         {isEditMode && index === firstNonPlayedIdx && firstNonPlayedIdx > 0 && (
                                                             <tr>
                                                                 <td colSpan="6" style={{
                                                                     textAlign: 'center',
                                                                     fontSize: '0.75rem',
                                                                     fontWeight: 600,
-                                                                    color: '#8b95a5',
+                                                                    color: '#dc2626',
                                                                     padding: '8px 0 4px',
-                                                                    borderBottom: '1px solid var(--color-border, #e5e7eb)',
+                                                                    borderBottom: '2px solid rgba(220, 38, 38, 0.3)',
                                                                 }}>
                                                                     — 불참 —
                                                                 </td>
@@ -1582,7 +1700,9 @@ function Schedule() {
                                                                     className="stat-mini-input"
                                                                     min="0"
                                                                     max="4"
-                                                                    value={player.quarters}
+                                                                    value={player.quarters || ''}
+                                                                    placeholder="0"
+                                                                    onFocus={(e) => { if (e.target.value === '0') e.target.value = ''; }}
                                                                     onChange={(e) => handlePlayerStatChange(index, 'quarters', e.target.value)}
                                                                     disabled={!player.played}
                                                                 />
@@ -1592,7 +1712,9 @@ function Schedule() {
                                                                     type="number"
                                                                     className="stat-mini-input"
                                                                     min="0"
-                                                                    value={player.goals}
+                                                                    value={player.goals || ''}
+                                                                    placeholder="0"
+                                                                    onFocus={(e) => { if (e.target.value === '0') e.target.value = ''; }}
                                                                     onChange={(e) => handlePlayerStatChange(index, 'goals', e.target.value)}
                                                                     disabled={!player.played}
                                                                 />
@@ -1602,7 +1724,9 @@ function Schedule() {
                                                                     type="number"
                                                                     className="stat-mini-input"
                                                                     min="0"
-                                                                    value={player.assists}
+                                                                    value={player.assists || ''}
+                                                                    placeholder="0"
+                                                                    onFocus={(e) => { if (e.target.value === '0') e.target.value = ''; }}
                                                                     onChange={(e) => handlePlayerStatChange(index, 'assists', e.target.value)}
                                                                     disabled={!player.played}
                                                                 />

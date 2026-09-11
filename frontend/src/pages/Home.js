@@ -196,7 +196,7 @@ function Home() {
         if (!window.confirm('팀 사진을 삭제하시겠습니까?')) return;
         try {
             await deleteTeamPhoto();
-            setTeamInfo(prev => ({ ...prev, photoBase64: null, photoFileName: null }));
+            setTeamInfo(prev => ({ ...prev, teamPhoto: null, teamPhotoFileName: null }));
         } catch (err) {
             console.error('사진 삭제 실패:', err);
         }
@@ -210,10 +210,10 @@ function Home() {
             <div className="team-intro-section">
                 {/* 팀 사진 */}
                 <div className="team-photo-area">
-                    {teamInfo?.photoBase64 ? (
+                    {teamInfo?.teamPhoto ? (
                         <div className="team-photo-wrapper">
                             <img
-                                src={teamInfo.photoBase64}
+                                src={teamInfo.teamPhoto}
                                 alt="팀 사진"
                                 className="team-photo"
                             />
@@ -263,7 +263,6 @@ function Home() {
                                         {teamInfo?.teamName || '창우FC'}
                                     </h1>
                                     <div className="team-badges">
-                                        <span className="team-badge team-badge-gold">SINCE 2024</span>
                                         <span className="team-badge team-badge-muted">{members.length}명</span>
                                     </div>
                                 </div>
@@ -458,6 +457,11 @@ function Home() {
                                     <div className="upcoming-location">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'4px',verticalAlign:'middle'}}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                                         {nextMatch.location}
+                                    </div>
+                                )}
+                                {nextMatch.memo && (
+                                    <div className="upcoming-location" style={{ marginTop: '4px', color: 'var(--color-text-light)' }}>
+                                        {nextMatch.memo}
                                     </div>
                                 )}
                             </div>

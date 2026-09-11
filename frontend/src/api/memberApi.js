@@ -1,109 +1,169 @@
 /**
  * ====================================
- * 파일: memberApi.js (수정됨)
- * 위치: frontend/src/api/ (기존 파일 덮어쓰기)
+ * 파일: memberApi.js (Firebase 버전)
+ * 위치: frontend/src/api/
+ * 기능: 멤버 관련 Firestore CRUD
  * ====================================
  *
  * 변경사항:
- * - createMemberWithPhoto() 추가 (FormData 방식)
- * - uploadMemberPhoto() 추가
- * - deleteMemberPhoto() 추가
+ * - 사진 저장: Base64 → Firebase Storage
+ * - Storage에 파일 업로드 후 다운로드 URL을 Firestore에 저장
  */
+import { db, storage } from '../firebase';
+import {
+    collection, doc, getDocs, getDoc, addDoc, updateDoc, deleteDoc,
+    query, where
+} from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
-const API_URL = 'http://localhost:8080/api';
+const MEMBERS = 'members';
+const MATCH_STATS = 'matchStats';
 
 // 전체 멤버 목록
 export async function getMembers() {
-    const response = await fetch(`${API_URL}/members`);
-    return response.json();
+    const snapshot = await getDocs(collection(db, MEMBERS));
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
 // 특정 멤버 조회
 export async function getMember(id) {
-    const response = await fetch(`${API_URL}/members/${id}`);
-    return response.json();
+    const docSnap = await getDoc(doc(db, MEMBERS, id));
+    if (!docSnap.exists()) return null;
+    return { id: docSnap.id, ...docSnap.data() };
 }
 
 // 멤버 추가 (JSON)
 export async function createMember(memberData) {
-    const response = await fetch(`${API_URL}/members`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(memberData),
-    });
-    return response.json();
+    const docRef = await addDoc(collection(db, MEMBERS), memberData);
+    return { id: docRef.id, ...memberData };
 }
 
-// 멤버 추가 (사진 포함, FormData)
+// 멤버 추가 (사진 포함) — Firebase Storage에 업로드
 export async function createMemberWithPhoto(name, backNumber, position, role, photoFile) {
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('backNumber', backNumber);
-    formData.append('position', position);
-    formData.append('role', role || 'MEMBER');
+    const memberData = {
+        name,
+        backNumber: Number(backNumber),
+        position,
+        role: role || 'MEMBER',
+        profilePhoto: null,
+        profilePhotoFileName: null,
+    };
+
+    // 먼저 Firestore에 멤버 문서 생성
+    const docRef = await addDoc(collection(db, MEMBERS), memberData);
+
+    // 사진이 있으면 Storage에 업로드
     if (photoFile) {
-        formData.append('photo', photoFile);
+        const storageRef = ref(storage, `members/${docRef.id}/${photoFile.name}`);
+        await uploadBytes(storageRef, photoFile);
+        const downloadURL = await getDownloadURL(storageRef);
+
+        await updateDoc(docRef, {
+            profilePhoto: downloadURL,
+            profilePhotoFileName: photoFile.name,
+        });
+        memberData.profilePhoto = downloadURL;
+        memberData.profilePhotoFileName = photoFile.name;
     }
-    const response = await fetch(`${API_URL}/members/with-photo`, {
-        method: 'POST',
-        body: formData,
-    });
-    return response.json();
+
+    return { id: docRef.id, ...memberData };
 }
 
 // 멤버 수정 (JSON)
 export async function updateMember(id, memberData) {
-    const response = await fetch(`${API_URL}/members/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(memberData),
-    });
-    return response.json();
+    const ref = doc(db, MEMBERS, id);
+    await updateDoc(ref, memberData);
+    return { id, ...memberData };
 }
 
-// 멤버 수정 (사진 포함, FormData)
+// 멤버 수정 (사진 포함)
 export async function updateMemberWithPhoto(id, name, backNumber, position, photoFile, removePhoto) {
-    const formData = new FormData();
-    formData.append('name', name);
-    formData.append('backNumber', backNumber);
-    formData.append('position', position);
-    formData.append('removePhoto', removePhoto ? 'true' : 'false');
-    if (photoFile) {
-        formData.append('photo', photoFile);
+    const updateData = {
+        name,
+        backNumber: Number(backNumber),
+        position,
+    };
+
+    // 사진 삭제 요청
+    if (removePhoto) {
+        // 기존 사진 Storage에서 삭제
+        const memberDoc = await getDoc(doc(db, MEMBERS, id));
+        if (memberDoc.exists() && memberDoc.data().profilePhotoFileName) {
+            try {
+                const oldRef = ref(storage, `members/${id}/${memberDoc.data().profilePhotoFileName}`);
+                await deleteObject(oldRef);
+            } catch (e) { /* 파일이 없을 수도 있음 */ }
+        }
+        updateData.profilePhoto = null;
+        updateData.profilePhotoFileName = null;
     }
-    const response = await fetch(`${API_URL}/members/${id}/with-photo`, {
-        method: 'PUT',
-        body: formData,
-    });
-    return response.json();
+
+    // 새 사진 업로드
+    if (photoFile) {
+        const storageRef = ref(storage, `members/${id}/${photoFile.name}`);
+        await uploadBytes(storageRef, photoFile);
+        const downloadURL = await getDownloadURL(storageRef);
+        updateData.profilePhoto = downloadURL;
+        updateData.profilePhotoFileName = photoFile.name;
+    }
+
+    const docRef = doc(db, MEMBERS, id);
+    await updateDoc(docRef, updateData);
+    return { id, ...updateData };
 }
 
 // 프로필 사진 업로드
 export async function uploadMemberPhoto(id, file) {
-    const formData = new FormData();
-    formData.append('file', file);
-    const response = await fetch(`${API_URL}/members/${id}/photo`, {
-        method: 'POST',
-        body: formData,
+    const storageRef = ref(storage, `members/${id}/${file.name}`);
+    await uploadBytes(storageRef, file);
+    const downloadURL = await getDownloadURL(storageRef);
+
+    const docRef = doc(db, MEMBERS, id);
+    await updateDoc(docRef, {
+        profilePhoto: downloadURL,
+        profilePhotoFileName: file.name,
     });
-    return response.json();
+    const updated = await getDoc(docRef);
+    return { id, ...updated.data() };
 }
 
 // 프로필 사진 삭제
 export async function deleteMemberPhoto(id) {
-    const response = await fetch(`${API_URL}/members/${id}/photo`, {
-        method: 'DELETE',
+    const docRef = doc(db, MEMBERS, id);
+    const memberDoc = await getDoc(docRef);
+
+    // Storage에서 파일 삭제
+    if (memberDoc.exists() && memberDoc.data().profilePhotoFileName) {
+        try {
+            const storageRef = ref(storage, `members/${id}/${memberDoc.data().profilePhotoFileName}`);
+            await deleteObject(storageRef);
+        } catch (e) { /* 파일이 없을 수도 있음 */ }
+    }
+
+    await updateDoc(docRef, {
+        profilePhoto: null,
+        profilePhotoFileName: null,
     });
-    return response.json();
+    const updated = await getDoc(docRef);
+    return { id, ...updated.data() };
 }
 
 // 멤버 삭제
 export async function deleteMember(id) {
-    await fetch(`${API_URL}/members/${id}`, { method: 'DELETE' });
+    // Storage에서 사진도 삭제
+    const memberDoc = await getDoc(doc(db, MEMBERS, id));
+    if (memberDoc.exists() && memberDoc.data().profilePhotoFileName) {
+        try {
+            const storageRef = ref(storage, `members/${id}/${memberDoc.data().profilePhotoFileName}`);
+            await deleteObject(storageRef);
+        } catch (e) { /* 파일이 없을 수도 있음 */ }
+    }
+    await deleteDoc(doc(db, MEMBERS, id));
 }
 
 // 특정 선수의 모든 스탯 조회
 export async function getMemberStats(memberId) {
-    const response = await fetch(`${API_URL}/members/${memberId}/stats`);
-    return response.json();
+    const q = query(collection(db, MATCH_STATS), where('memberId', '==', memberId));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }

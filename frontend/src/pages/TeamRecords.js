@@ -173,7 +173,7 @@ function TeamRecords() {
                 ].map(tab => (
                     <button
                         key={tab.key}
-                        className={`filter-tab ${filter === tab.key ? 'active' : ''}`}
+                        className={`filter-tab filter-tab-${tab.key} ${filter === tab.key ? 'active' : ''}`}
                         onClick={() => setFilter(tab.key)}
                     >
                         {tab.label}
@@ -210,9 +210,6 @@ function TeamRecords() {
                                 <div className="tr-col-num">{idx + 1}</div>
                                 <div className="tr-col-date">{match.matchDate}</div>
                                 <div className="tr-col-opponent">
-                                    <div className="tr-opponent-badge">
-                                        <span>{match.opponent?.charAt(0) || '?'}</span>
-                                    </div>
                                     <span className="tr-opponent-name">{match.opponent}</span>
                                 </div>
                                 <div className="tr-col-score">
