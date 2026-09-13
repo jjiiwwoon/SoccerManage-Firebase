@@ -71,6 +71,7 @@ body {
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     min-height: 100vh;
+    min-width: 1280px;
 }
 
 .App {
@@ -91,7 +92,7 @@ body {
 }
 
 .nav-inner {
-    max-width: 1400px;
+    width: 1280px;
     margin: 0 auto;
     padding: 0 40px;
     display: flex;
@@ -160,10 +161,9 @@ body {
 /* ===== Content Area ===== */
 .content {
     flex: 1;
-    max-width: 1400px;
+    width: 1280px;
     margin: 0 auto;
     padding: 24px 40px;
-    width: 100%;
 }
 
 /* ===== Page Title ===== */
