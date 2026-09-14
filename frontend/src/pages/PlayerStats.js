@@ -7,7 +7,7 @@
  *
  * Design canvas 기반 리팩터링:
  * - HTML table -> CSS Grid 기반 div 레이아웃
- * - 컬럼: # | 선수 | 출전 | 쿼터 | 골 | 도움 | 공격P | MOM | 출석률 | 경기당 골
+ * - 컬럼: # | 선수 | 출전 | 골 | 도움 | 공격P | 출석률 | 경기당 골
  * - 포지션 컬러 아바타 (36x36), 상세패널 (56x56)
  * - 각 컬럼 헤더 클릭 시 오름차순/내림차순 정렬
  * - 클릭 시 하단 상세 패널 (경기별 기록 포함)
@@ -54,11 +54,9 @@ function getPositionClass(position) {
 // 컬럼 정의 (헤더 클릭 정렬용)
 const COLUMNS = [
     { key: 'matches', label: '출전' },
-    { key: 'quarters', label: '쿼터' },
     { key: 'goals', label: '골' },
     { key: 'assists', label: '도움' },
     { key: 'attackPoints', label: '공격P' },
-    { key: 'mom', label: 'MOM' },
     { key: 'attendance', label: '출석률' },
     { key: 'goalsPerGame', label: '경기당 골' },
 ];
@@ -66,7 +64,7 @@ const COLUMNS = [
 function PlayerStats() {
     const [members, setMembers] = useState([]);
     const [playerStats, setPlayerStats] = useState([]);
-    const [matchRecords, setMatchRecords] = useState({}); // { [memberId]: [{ matchDate, opponent, goals, assists, mom, result }] }
+    const [matchRecords, setMatchRecords] = useState({}); // { [memberId]: [{ matchDate, opponent, goals, assists, result }] }
     const [totalCompletedMatches, setTotalCompletedMatches] = useState(0);
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('all');
@@ -95,7 +93,6 @@ function PlayerStats() {
                         backNumber: member.backNumber || '-',
                         profilePhoto: member.profilePhoto || null,
                         matches: 0,
-                        quarters: 0,
                         goals: 0,
                         assists: 0,
                     };
@@ -118,7 +115,6 @@ function PlayerStats() {
                             const memberId = stat.member?.id || stat.memberId;
                             if (allStats[memberId]) {
                                 allStats[memberId].matches += 1;
-                                allStats[memberId].quarters += (stat.quarters || 0);
                                 allStats[memberId].goals += (stat.goals || 0);
                                 allStats[memberId].assists += (stat.assists || 0);
 
@@ -128,7 +124,6 @@ function PlayerStats() {
                                     opponent: match.opponent || '-',
                                     goals: stat.goals || 0,
                                     assists: stat.assists || 0,
-                                    mom: 0, // MOM 데이터 모델에 없으므로 placeholder
                                     result: result,
                                     score: `${match.ourScore}-${match.opponentScore}`,
                                 });
@@ -142,7 +137,6 @@ function PlayerStats() {
                 const statsArray = Object.values(allStats).map(s => ({
                     ...s,
                     attackPoints: s.goals + s.assists,
-                    mom: 0, // MOM placeholder
                     attendance: completedMatches.length > 0
                         ? Math.round((s.matches / completedMatches.length) * 100)
                         : 0,
@@ -427,7 +421,6 @@ function PlayerStats() {
                         <div>상대</div>
                         <div>골</div>
                         <div>도움</div>
-                        <div>MOM</div>
                         <div>결과</div>
                     </div>
                     {selectedPlayerRecords.length === 0 ? (
@@ -439,7 +432,6 @@ function PlayerStats() {
                                 <div>{record.opponent}</div>
                                 <div>{record.goals}</div>
                                 <div>{record.assists}</div>
-                                <div>{record.mom ? 'MVP' : '-'}</div>
                                 <div className={`ps-result-${record.result}`}>
                                     {record.result} ({record.score})
                                 </div>
@@ -466,16 +458,16 @@ function PlayerStats() {
                     text-transform: uppercase;
                 }
 
-                /* Grid Columns: # | 선수 | 출전 | 쿼터 | 골 | 도움 | 공격P | MOM | 출석률 | 경기당 골 */
+                /* Grid Columns: # | 선수 | 출전 | 골 | 도움 | 공격P | 출석률 | 경기당 골 */
                 .ps-table-head,
                 .ps-table-row {
                     display: grid;
-                    grid-template-columns: 52px 1.4fr 80px 80px 80px 80px 88px 80px 88px 104px;
+                    grid-template-columns: 52px 0.9fr 80px 80px 80px 88px 88px 104px;
                     align-items: center;
                     min-height: 56px;
                 }
                 .ps-table-head {
-                    padding: 0 20px;
+                    padding: 0 36px 0 20px;
                     background: var(--color-bg-secondary, #f9fafb);
                     border-bottom: 1px solid var(--color-border, #e5e7eb);
                     font-size: 13px;
@@ -490,6 +482,9 @@ function PlayerStats() {
                     user-select: none;
                     transition: color 0.15s;
                     position: relative;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
                 .ps-col-sortable:hover {
                     color: var(--color-text, #333);
@@ -500,9 +495,9 @@ function PlayerStats() {
                 .ps-sort-arrow {
                     font-size: 8px;
                     position: absolute;
-                    bottom: -2px;
-                    left: 50%;
-                    transform: translateX(-50%);
+                    right: 2px;
+                    top: 50%;
+                    transform: translateY(-50%);
                 }
                 .ps-table-body {
                     max-height: 600px;
@@ -528,6 +523,9 @@ function PlayerStats() {
                     font-weight: 500;
                     color: var(--color-text-muted, #999);
                     text-align: center;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
                 .ps-col-player {
                     display: flex;
@@ -560,6 +558,9 @@ function PlayerStats() {
                 }
                 .ps-col-stat {
                     text-align: center;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                     font-size: 17px;
                     font-weight: 500;
                     color: var(--color-text, #333);
@@ -652,7 +653,7 @@ function PlayerStats() {
                 .ps-detail-matches-head,
                 .ps-detail-match-row {
                     display: grid;
-                    grid-template-columns: 100px 1fr 50px 50px 50px 100px;
+                    grid-template-columns: 100px 1fr 50px 50px 100px;
                     padding: 6px 24px;
                     font-size: 12px;
                     align-items: center;
@@ -687,32 +688,6 @@ function PlayerStats() {
                 .ps-result-패 { color: #dc2626; font-weight: 600; }
                 .ps-result-무 { color: var(--color-text-muted, #999); font-weight: 500; }
 
-                /* 반응형 */
-                @media (max-width: 768px) {
-                    .ps-table-head,
-                    .ps-table-row {
-                        grid-template-columns: 36px 1fr 52px 52px 52px 52px 60px 52px 60px 68px;
-                        padding: 6px 10px;
-                        font-size: 12px;
-                    }
-                    .ps-table-head {
-                        font-size: 11px;
-                    }
-                    .ps-col-stat {
-                        font-size: 15px;
-                    }
-                    .ps-detail-header {
-                        padding: 16px;
-                    }
-                    .ps-detail-big-stats {
-                        gap: 16px;
-                    }
-                    .ps-detail-matches-head,
-                    .ps-detail-match-row {
-                        grid-template-columns: 80px 1fr 40px 40px 40px 80px;
-                        padding: 6px 12px;
-                    }
-                }
             `}</style>
         </div>
     );

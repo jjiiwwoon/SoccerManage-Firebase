@@ -140,29 +140,35 @@ const scStyles = `
     gap: 1px;
     width: 100%;
     padding-bottom: 2px;
+    position: relative;
 }
 
 .sc-cal-match-label {
-    font-size: 1rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #3b82f6;
     line-height: 1.3;
     letter-spacing: 0.3px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
 }
 
 .sc-cal-match-vs {
-    font-size: 1rem;
+    font-size: 0.7rem;
     font-weight: 600;
     color: #8b95a5;
-    line-height: 1.5;
+    line-height: 1.2;
     text-align: center;
 }
 
 .sc-cal-match-opponent {
-    font-size: 1rem;
+    font-size: 0.75rem;
     font-weight: 700;
     color: var(--color-text, #1a1a2e);
-    line-height: 1.5;
+    line-height: 1.2;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -171,9 +177,9 @@ const scStyles = `
 }
 
 .sc-cal-match-result {
-    font-size: 1rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    line-height: 1.5;
+    line-height: 1.2;
     border-radius: 3px;
     padding: 1px 5px;
 }
@@ -222,7 +228,7 @@ const scStyles = `
 }
 
 .sc-match-body {
-    padding: 16px 10px;
+    padding: 16px 18px;
 }
 
 .sc-match-info-center {
@@ -231,7 +237,7 @@ const scStyles = `
 }
 
 .sc-match-info-date {
-    font-size: 1.0rem;
+    font-size: 0.95rem;
     color: #8b95a5;
     font-weight: 600;
 }
@@ -240,7 +246,7 @@ const scStyles = `
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     color: #8b95a5;
     margin-top: 4px;
 }
@@ -256,7 +262,7 @@ const scStyles = `
     padding: 8px 12px;
     background: var(--color-light, #f3f4f6);
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.82rem;
     color: #8b95a5;
     line-height: 1.5;
     white-space: pre-wrap;
@@ -285,7 +291,7 @@ const scStyles = `
 }
 
 .sc-team-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     color: #8b95a5;
     font-weight: 600;
     letter-spacing: 1px;
@@ -304,7 +310,7 @@ const scStyles = `
 
 .sc-score-text {
     font-family: 'Oswald', sans-serif;
-    font-size: 1.7rem;
+    font-size: 2rem;
     font-weight: 700;
     color: var(--color-text, #1a1a2e);
     letter-spacing: 3px;
@@ -319,7 +325,7 @@ const scStyles = `
 
 .sc-result-pill {
     display: inline-block;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     padding: 4px 14px;
     border-radius: 10px;
@@ -342,7 +348,7 @@ const scStyles = `
 .sc-match-header-btn {
     padding: 4px 12px;
     border-radius: 6px;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.15s;
@@ -416,7 +422,7 @@ const scStyles = `
     padding: 2px 0;
 }
 .sc-scorer-name {
-    font-size: 1.1rem;
+    font-size: 0.92rem;
     font-weight: 600;
     color: var(--color-text, #1a1a2e);
 }
@@ -533,24 +539,6 @@ const scStyles = `
     font-size: 0.82rem;
 }
 
-/* ===== Responsive ===== */
-@media (max-width: 800px) {
-    .sc-layout {
-        grid-template-columns: 1fr;
-    }
-    .sc-cal-match-vs {
-        font-size: 0.58rem;
-    }
-    .sc-cal-match-opponent {
-        font-size: 0.62rem;
-    }
-    .sc-cal-match-result {
-        font-size: 0.58rem;
-    }
-    .sc-cal-match-label {
-        font-size: 0.65rem;
-    }
-}
 `;
 
 function Schedule() {
@@ -808,6 +796,12 @@ function Schedule() {
         const dateStr = selectedDate
             ? `${year}-${String(month + 1).padStart(2, '0')}-${String(selectedDate).padStart(2, '0')}`
             : `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        // 중복 날짜 체크 — 모달 열기 전에 바로 안내
+        const existingMatch = matches.find(m => m.matchDate === dateStr);
+        if (existingMatch) {
+            alert('해당 날짜에 이미 일정이 있습니다.');
+            return;
+        }
         setEditingMatchId(null);
         setNewSchedule({
             matchDate: dateStr,
@@ -840,6 +834,12 @@ function Schedule() {
         e.preventDefault();
         if (!newSchedule.matchDate || !newSchedule.opponent) {
             alert('날짜와 상대팀은 필수입니다.');
+            return;
+        }
+        // 중복 날짜 체크 (수정 모드에서 같은 경기는 제외)
+        const existingMatch = matches.find(m => m.matchDate === newSchedule.matchDate);
+        if (existingMatch && (!editingMatchId || existingMatch.id !== editingMatchId)) {
+            alert('해당 날짜에 이미 일정이 있습니다.');
             return;
         }
         try {
@@ -915,7 +915,6 @@ function Schedule() {
                 played: isEdit ? (existing ? true : false) : true,
                 goals: existing?.goals || 0,
                 assists: existing?.assists || 0,
-                quarters: existing?.quarters || 0,
             };
         });
         // 가나다순 정렬, 수정모드에서는 참가자 먼저
@@ -938,7 +937,6 @@ function Schedule() {
             if (!value) {
                 updated[index].goals = 0;
                 updated[index].assists = 0;
-                updated[index].quarters = 0;
             }
         } else {
             updated[index][field] = parseInt(value) || 0;
@@ -990,7 +988,6 @@ function Schedule() {
                 await createMatchStat(selectedMatch.id, player.memberId, {
                     goals: player.goals,
                     assists: player.assists,
-                    quarters: player.quarters,
                 });
             }
 
@@ -1086,21 +1083,24 @@ function Schedule() {
                     onClick={() => handleDateClick(day)}
                 >
                     <span className="sc-cal-day" style={{ color: getDayColor(dayOfWeek) }}>{day}</span>
-                                        {match && (
-                        <>
-                            {result === 'upcoming' && (
-                                <span className="sc-cal-match-label">Match Day</span>
-                            )}
-                            <div className="sc-cal-match-info">
-                                <span className="sc-cal-match-vs">vs</span>
-                                <span className="sc-cal-match-opponent">{match.opponent}</span>
-                                {result !== 'upcoming' && (
+                    {match && (
+                        <div className="sc-cal-match-info">
+                            {result === 'upcoming' ? (
+                                <>
+                                    <span className="sc-cal-match-label">Match Day</span>
+                                    <span className="sc-cal-match-vs">vs</span>
+                                    <span className="sc-cal-match-opponent">{match.opponent}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="sc-cal-match-vs">vs</span>
+                                    <span className="sc-cal-match-opponent">{match.opponent}</span>
                                     <span className="sc-cal-match-result" style={{ color: getResultColor(result) }}>
                                         {getResultLabel(result)}
                                     </span>
-                                )}
-                            </div>
-                        </>
+                                </>
+                            )}
+                        </div>
                     )}
                 </div>
             );
@@ -1625,7 +1625,6 @@ function Schedule() {
                                                                     played: allChecked,
                                                                     goals: allChecked ? p.goals : 0,
                                                                     assists: allChecked ? p.assists : 0,
-                                                                    quarters: allChecked ? p.quarters : 0,
                                                                 })));
                                                             }}
                                                             title="전체 선택/해제"
@@ -1634,7 +1633,6 @@ function Schedule() {
                                                 </th>
                                                 <th>선수</th>
                                                 <th style={{ width: '50px' }}>포지션</th>
-                                                <th style={{ width: '60px' }}>쿼터</th>
                                                 <th style={{ width: '60px' }}>득점</th>
                                                 <th style={{ width: '60px' }}>도움</th>
                                             </tr>
@@ -1648,7 +1646,7 @@ function Schedule() {
                                                     <React.Fragment key={player.memberId}>
                                                         {isEditMode && index === firstPlayedIdx && firstPlayedIdx >= 0 && (
                                                             <tr>
-                                                                <td colSpan="6" style={{
+                                                                <td colSpan="5" style={{
                                                                     textAlign: 'center',
                                                                     fontSize: '0.75rem',
                                                                     fontWeight: 600,
@@ -1662,7 +1660,7 @@ function Schedule() {
                                                         )}
                                                         {isEditMode && index === firstNonPlayedIdx && firstNonPlayedIdx > 0 && (
                                                             <tr>
-                                                                <td colSpan="6" style={{
+                                                                <td colSpan="5" style={{
                                                                     textAlign: 'center',
                                                                     fontSize: '0.75rem',
                                                                     fontWeight: 600,
@@ -1693,19 +1691,6 @@ function Schedule() {
                                                                 <span className={`badge ${getPositionClass(player.position)}`} style={{ fontSize: '0.7rem' }}>
                                                                     {getPositionLabel(player.position)}
                                                                 </span>
-                                                            </td>
-                                                            <td>
-                                                                <input
-                                                                    type="number"
-                                                                    className="stat-mini-input"
-                                                                    min="0"
-                                                                    max="4"
-                                                                    value={player.quarters || ''}
-                                                                    placeholder="0"
-                                                                    onFocus={(e) => { if (e.target.value === '0') e.target.value = ''; }}
-                                                                    onChange={(e) => handlePlayerStatChange(index, 'quarters', e.target.value)}
-                                                                    disabled={!player.played}
-                                                                />
                                                             </td>
                                                             <td>
                                                                 <input

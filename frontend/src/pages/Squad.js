@@ -283,9 +283,9 @@ function Squad() {
                 </div>
                 <button
                     className="btn btn-gold"
-                    onClick={() => setShowForm(!showForm)}
+                    onClick={() => setShowForm(true)}
                 >
-                    {showForm ? '닫기' : '+ 선수 등록'}
+                    + 선수 등록
                 </button>
             </div>
 
@@ -389,105 +389,108 @@ function Squad() {
                 )}
             </div>
 
-            {/* ===== 선수 등록 폼 ===== */}
+            {/* ===== 선수 등록 모달 ===== */}
             {showForm && (
-                <form className="register-form" onSubmit={handleSubmit}>
-                    <div className="form-title">선수 등록</div>
+                <div className="modal-overlay" onClick={() => { setShowForm(false); setNewMember({ name: '', backNumber: '', position: '' }); clearProfile(); }}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()}>
+                        <form onSubmit={handleSubmit}>
+                            <div className="form-title">선수 등록</div>
 
-                    <div className="profile-upload-area">
-                        <div
-                            className="profile-upload-preview"
-                            onClick={() => fileInputRef.current?.click()}
-                        >
-                            {profilePreview ? (
-                                <img src={profilePreview} alt="미리보기" className="profile-upload-img" />
-                            ) : (
-                                <div className="profile-upload-placeholder">
-                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-                                    <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-                                        사진 추가
-                                    </span>
+                            <div className="profile-upload-area">
+                                <div
+                                    className="profile-upload-preview"
+                                    onClick={() => fileInputRef.current?.click()}
+                                >
+                                    {profilePreview ? (
+                                        <img src={profilePreview} alt="미리보기" className="profile-upload-img" />
+                                    ) : (
+                                        <div className="profile-upload-placeholder">
+                                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                                                사진 추가
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            accept="image/*"
-                            onChange={handleProfileSelect}
-                            style={{ display: 'none' }}
-                        />
-                        {profilePreview && (
-                            <button
-                                type="button"
-                                className="btn btn-sm btn-outline"
-                                onClick={clearProfile}
-                                style={{ marginTop: '8px' }}
-                            >
-                                사진 제거
-                            </button>
-                        )}
-                        <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
-                            선택사항
-                        </div>
-                    </div>
+                                <input
+                                    ref={fileInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleProfileSelect}
+                                    style={{ display: 'none' }}
+                                />
+                                {profilePreview && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-outline"
+                                        onClick={clearProfile}
+                                        style={{ marginTop: '8px' }}
+                                    >
+                                        사진 제거
+                                    </button>
+                                )}
+                                <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', marginTop: '4px' }}>
+                                    선택사항
+                                </div>
+                            </div>
 
-                    <div className="form-grid">
-                        <div className="form-group">
-                            <label className="form-label">이름 *</label>
-                            <input
-                                type="text"
-                                className="form-input"
-                                placeholder="선수 이름"
-                                value={newMember.name}
-                                onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">등번호 *</label>
-                            <input
-                                type="number"
-                                className="form-input"
-                                placeholder="등번호"
-                                value={newMember.backNumber}
-                                onChange={(e) => setNewMember({ ...newMember, backNumber: e.target.value })}
-                                required
-                            />
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">포지션 *</label>
-                            <select
-                                className="form-select"
-                                value={newMember.position}
-                                onChange={(e) => setNewMember({ ...newMember, position: e.target.value })}
-                                required
-                            >
-                                <option value="">선택</option>
-                                <option value="GK">GK (골키퍼)</option>
-                                <option value="DF">DF (수비수)</option>
-                                <option value="MF">MF (미드필더)</option>
-                                <option value="FW">FW (공격수)</option>
-                            </select>
-                        </div>
+                            <div className="form-group">
+                                <label className="form-label">이름 *</label>
+                                <input
+                                    type="text"
+                                    className="form-input"
+                                    placeholder="선수 이름"
+                                    value={newMember.name}
+                                    onChange={(e) => setNewMember({ ...newMember, name: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">등번호 *</label>
+                                <input
+                                    type="number"
+                                    className="form-input"
+                                    placeholder="등번호"
+                                    value={newMember.backNumber}
+                                    onChange={(e) => setNewMember({ ...newMember, backNumber: e.target.value })}
+                                    required
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="form-label">포지션 *</label>
+                                <select
+                                    className="form-select"
+                                    value={newMember.position}
+                                    onChange={(e) => setNewMember({ ...newMember, position: e.target.value })}
+                                    required
+                                >
+                                    <option value="">선택</option>
+                                    <option value="GK">GK (골키퍼)</option>
+                                    <option value="DF">DF (수비수)</option>
+                                    <option value="MF">MF (미드필더)</option>
+                                    <option value="FW">FW (공격수)</option>
+                                </select>
+                            </div>
+
+                            <div className="form-actions">
+                                <button
+                                    type="button"
+                                    className="btn btn-outline"
+                                    onClick={() => {
+                                        setShowForm(false);
+                                        setNewMember({ name: '', backNumber: '', position: '' });
+                                        clearProfile();
+                                    }}
+                                >
+                                    취소
+                                </button>
+                                <button type="submit" className="btn btn-gold">
+                                    등록
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                    <div className="form-actions">
-                        <button
-                            type="button"
-                            className="btn btn-outline"
-                            onClick={() => {
-                                setShowForm(false);
-                                setNewMember({ name: '', backNumber: '', position: '' });
-                                clearProfile();
-                            }}
-                        >
-                            취소
-                        </button>
-                        <button type="submit" className="btn btn-gold">
-                            등록
-                        </button>
-                    </div>
-                </form>
+                </div>
             )}
 
             {/* ===== 선수 편집 모달 ===== */}
