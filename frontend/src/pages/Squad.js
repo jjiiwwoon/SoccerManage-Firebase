@@ -21,7 +21,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import {
     getMembers, createMemberWithPhoto, updateMemberWithPhoto, deleteMember
 } from '../api/memberApi';
-import { getMatches, getMatchStats } from '../api/matchApi';
+import { getMatches, getAllMatchStats } from '../api/matchApi';
+import { getPositionLabel, getPositionClass } from '../utils/positionUtils';
+
+// Squad 페이지 전용 포지션 색상 (디자인 시스템 색상)
+const SQUAD_COLORS = {
+    GK: '#b08d2a',
+    DF: '#2563eb',
+    MF: '#16a34a',
+    FW: '#dc2626',
+};
+
+function getSquadPositionColor(position) {
+    const label = getPositionLabel(position);
+    return SQUAD_COLORS[label] || '#888';
+}
 
 function Squad() {
     const [members, setMembers] = useState([]);
@@ -78,59 +92,34 @@ function Squad() {
 
     async function fetchPlayerStats() {
         try {
-            const matchesData = await getMatches();
+            const [matchesData, allMatchStatsData] = await Promise.all([
+                getMatches(),
+                getAllMatchStats(),
+            ]);
             const completedMatches = matchesData.filter(m => m.ourScore != null && m.opponentScore != null);
+
+            // matchId → 완료된 경기 매핑
+            const completedMatchIds = new Set(completedMatches.map(m => m.id));
 
             const stats = {};
             members.forEach(member => {
                 stats[member.id] = { matches: 0, goals: 0, assists: 0 };
             });
 
-            for (const match of completedMatches) {
-                try {
-                    const matchStats = await getMatchStats(match.id);
-                    matchStats.forEach(stat => {
-                        const memberId = stat.member?.id || stat.memberId;
-                        if (stats[memberId]) {
-                            stats[memberId].matches += 1;
-                            stats[memberId].goals += (stat.goals || 0);
-                            stats[memberId].assists += (stat.assists || 0);
-                        }
-                    });
-                } catch (err) {
-                    // 개별 경기 스탯 로딩 실패 시 건너뜀
+            allMatchStatsData.forEach(stat => {
+                if (!completedMatchIds.has(stat.matchId)) return;
+                const memberId = stat.member?.id || stat.memberId;
+                if (stats[memberId]) {
+                    stats[memberId].matches += 1;
+                    stats[memberId].goals += (stat.goals || 0);
+                    stats[memberId].assists += (stat.assists || 0);
                 }
-            }
+            });
 
             setPlayerMatchStats(stats);
         } catch (err) {
             console.error('선수 스탯 로딩 실패:', err);
         }
-    }
-
-    // 포지션 판별
-    function getPositionLabel(position) {
-        const pos = (position || '').toUpperCase();
-        if (pos.includes('GK') || pos === '골키퍼') return 'GK';
-        if (pos.includes('DF') || pos === '수비수') return 'DF';
-        if (pos.includes('MF') || pos === '미드필더') return 'MF';
-        if (pos.includes('FW') || pos === '공격수') return 'FW';
-        return pos || '-';
-    }
-
-    function getPositionClass(position) {
-        const label = getPositionLabel(position);
-        return `badge-${label.toLowerCase()}`;
-    }
-
-    // 포지션 컬러 (인라인 스타일용)
-    function getPositionColor(position) {
-        const label = getPositionLabel(position);
-        if (label === 'GK') return '#b08d2a';
-        if (label === 'DF') return '#2563eb';
-        if (label === 'MF') return '#16a34a';
-        if (label === 'FW') return '#dc2626';
-        return '#8b95a5';
     }
 
     // 포지션별 인원수
@@ -336,7 +325,7 @@ function Squad() {
                     </p>
                 ) : (
                     filteredMembers.map(member => {
-                        const posColor = getPositionColor(member.position);
+                        const posColor = getSquadPositionColor(member.position);
                         const stats = playerMatchStats[member.id] || { matches: 0, goals: 0, assists: 0 };
                         return (
                             <div

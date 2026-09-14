@@ -16,40 +16,8 @@
  */
 import React, { useState, useEffect } from 'react';
 import { getMembers } from '../api/memberApi';
-import { getMatches, getMatchStats } from '../api/matchApi';
-
-const API_URL = 'http://localhost:8080/api';
-
-// 포지션별 색상 매핑
-const POSITION_COLORS = {
-    GK: '#E8B931',
-    DF: '#4A90D9',
-    MF: '#50B86C',
-    FW: '#E85D5D',
-};
-
-function getPositionLabel(position) {
-    const pos = (position || '').toUpperCase();
-    if (pos.includes('GK') || pos === '골키퍼') return 'GK';
-    if (pos.includes('DF') || pos === '수비수') return 'DF';
-    if (pos.includes('MF') || pos === '미드필더') return 'MF';
-    if (pos.includes('FW') || pos === '공격수') return 'FW';
-    return pos || '-';
-}
-
-function getPositionColor(position) {
-    const label = getPositionLabel(position);
-    return POSITION_COLORS[label] || '#888';
-}
-
-function getPositionClass(position) {
-    const pos = (position || '').toUpperCase();
-    if (pos.includes('GK') || pos === '골키퍼') return 'badge-gk';
-    if (pos.includes('DF') || pos === '수비수') return 'badge-df';
-    if (pos.includes('MF') || pos === '미드필더') return 'badge-mf';
-    if (pos.includes('FW') || pos === '공격수') return 'badge-fw';
-    return '';
-}
+import { getMatches, getAllMatchStats } from '../api/matchApi';
+import { getPositionLabel, getPositionColor, getPositionClass } from '../utils/positionUtils';
 
 // 컬럼 정의 (헤더 클릭 정렬용)
 const COLUMNS = [
@@ -103,36 +71,39 @@ function PlayerStats() {
                 const completedMatches = matchesData.filter(m => m.ourScore != null && m.opponentScore != null);
                 setTotalCompletedMatches(completedMatches.length);
 
-                for (const match of completedMatches) {
-                    try {
-                        const stats = await getMatchStats(match.id);
-                        // 경기 결과 판단
-                        let result = '무';
-                        if (match.ourScore > match.opponentScore) result = '승';
-                        else if (match.ourScore < match.opponentScore) result = '패';
+                // 전체 스탯 일괄 조회 (N+1 쿼리 방지)
+                const allMatchStatsData = await getAllMatchStats();
 
-                        stats.forEach(stat => {
-                            const memberId = stat.member?.id || stat.memberId;
-                            if (allStats[memberId]) {
-                                allStats[memberId].matches += 1;
-                                allStats[memberId].goals += (stat.goals || 0);
-                                allStats[memberId].assists += (stat.assists || 0);
+                // matchId → match 매핑
+                const matchMap = {};
+                completedMatches.forEach(m => { matchMap[m.id] = m; });
 
-                                // 경기별 기록 저장
-                                allMatchRecords[memberId].push({
-                                    matchDate: match.matchDate || match.date || '-',
-                                    opponent: match.opponent || '-',
-                                    goals: stat.goals || 0,
-                                    assists: stat.assists || 0,
-                                    result: result,
-                                    score: `${match.ourScore}-${match.opponentScore}`,
-                                });
-                            }
-                        });
-                    } catch (err) {
-                        // 개별 경기 스탯 로딩 실패 시 건너뜀
-                    }
-                }
+                allMatchStatsData.forEach(stat => {
+                    const match = matchMap[stat.matchId];
+                    if (!match) return; // 완료되지 않은 경기의 스탯은 건너뜀
+
+                    const memberId = stat.member?.id || stat.memberId;
+                    if (!allStats[memberId]) return;
+
+                    // 경기 결과 판단
+                    let result = '무';
+                    if (match.ourScore > match.opponentScore) result = '승';
+                    else if (match.ourScore < match.opponentScore) result = '패';
+
+                    allStats[memberId].matches += 1;
+                    allStats[memberId].goals += (stat.goals || 0);
+                    allStats[memberId].assists += (stat.assists || 0);
+
+                    // 경기별 기록 저장
+                    allMatchRecords[memberId].push({
+                        matchDate: match.matchDate || match.date || '-',
+                        opponent: match.opponent || '-',
+                        goals: stat.goals || 0,
+                        assists: stat.assists || 0,
+                        result: result,
+                        score: `${match.ourScore}-${match.opponentScore}`,
+                    });
+                });
 
                 const statsArray = Object.values(allStats).map(s => ({
                     ...s,
@@ -221,9 +192,6 @@ function PlayerStats() {
         const gradient = `linear-gradient(135deg, ${color}33, ${color}66)`;
 
         if (player.profilePhoto) {
-            const photoUrl = player.profilePhoto.startsWith('data:') || player.profilePhoto.startsWith('http')
-                ? player.profilePhoto
-                : `${API_URL.replace('/api', '')}${player.profilePhoto}`;
             return (
                 <div
                     className="ps-player-avatar"
@@ -240,7 +208,7 @@ function PlayerStats() {
                     }}
                 >
                     <img
-                        src={photoUrl}
+                        src={player.profilePhoto}
                         alt={player.name}
                         style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }}
                     />

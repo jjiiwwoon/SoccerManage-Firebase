@@ -1,0 +1,528 @@
+/* ====================================
+ * Schedule.css
+ * 일정 페이지 전용 스타일
+ * ==================================== */
+
+/* ===== Layout ===== */
+.sc-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 20px;
+    align-items: start;
+}
+
+/* ===== Calendar Card ===== */
+.sc-cal-card {
+    background: var(--color-surface, #fff);
+    border-radius: 12px;
+    border: 1px solid var(--color-border, #e5e7eb);
+    padding: 24px;
+}
+
+.sc-cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.sc-cal-nav-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sc-cal-nav-btn {
+    background: none;
+    border: 1px solid var(--color-border, #e5e7eb);
+    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--color-text, #1a1a2e);
+    transition: background 0.15s;
+}
+.sc-cal-nav-btn:hover {
+    background: var(--color-light, #f3f4f6);
+}
+
+.sc-cal-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--color-text, #1a1a2e);
+    min-width: 130px;
+    text-align: center;
+}
+
+/* Calendar Grid */
+.sc-cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0;
+}
+
+.sc-cal-dow {
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 10px 0;
+    color: #8b95a5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sc-cal-cell {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background 0.15s, border-color 0.15s;
+    position: relative;
+    padding: 5px 3px 3px;
+    overflow: hidden;
+    border: 2px solid transparent;
+}
+.sc-cal-cell:hover {
+    background: var(--color-light, #f3f4f6);
+}
+.sc-cal-cell.sc-cal-other {
+    opacity: 0.3;
+    pointer-events: none;
+}
+.sc-cal-cell.sc-cal-today {
+    border: 2px solid var(--color-gold, #b08d2a);
+    background: rgba(176, 141, 42, 0.06);
+}
+.sc-cal-cell.sc-cal-selected {
+    background: rgba(176, 141, 42, 0.12);
+}
+.sc-cal-cell.sc-cal-completed {
+    border-color: #b0b8c4;
+    background: rgba(139, 149, 165, 0.04);
+}
+.sc-cal-cell.sc-cal-upcoming {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.04);
+}
+
+.sc-cal-day {
+    font-size: 0.88rem;
+    font-weight: 600;
+    line-height: 1;
+    margin-bottom: 0;
+}
+
+.sc-cal-match-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 1px;
+    width: 100%;
+    padding-bottom: 2px;
+    position: relative;
+}
+
+.sc-cal-match-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #3b82f6;
+    line-height: 1.3;
+    letter-spacing: 0.3px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+}
+
+.sc-cal-match-vs {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #8b95a5;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.sc-cal-match-opponent {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-text, #1a1a2e);
+    line-height: 1.2;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.sc-cal-match-result {
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1.2;
+    border-radius: 3px;
+    padding: 1px 5px;
+}
+
+/* Legend */
+.sc-cal-legend {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border, #e5e7eb);
+}
+.sc-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.72rem;
+    color: #8b95a5;
+}
+.sc-legend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+/* ===== Sidebar ===== */
+.sc-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+/* Match Card */
+.sc-match-card {
+    background: var(--color-surface, #fff);
+    border-radius: 12px;
+    border: 1px solid var(--color-border, #e5e7eb);
+    overflow: hidden;
+}
+
+.sc-match-topline {
+    height: 3px;
+    width: 100%;
+}
+
+.sc-match-body {
+    padding: 16px 18px;
+}
+
+.sc-match-info-center {
+    text-align: center;
+    margin-bottom: 14px;
+}
+
+.sc-match-info-date {
+    font-size: 0.95rem;
+    color: #8b95a5;
+    font-weight: 600;
+}
+
+.sc-match-info-location {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.9rem;
+    color: #8b95a5;
+    margin-top: 4px;
+}
+
+.sc-match-status-text {
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.sc-match-memo-box {
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: var(--color-light, #f3f4f6);
+    border-radius: 8px;
+    font-size: 0.82rem;
+    color: #8b95a5;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
+
+.sc-match-teams {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.sc-team {
+    text-align: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.sc-team-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--color-text, #1a1a2e);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sc-team-label {
+    font-size: 0.65rem;
+    color: #8b95a5;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-top: 2px;
+}
+
+/* Score area */
+.sc-match-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    padding: 0 4px;
+}
+
+.sc-score-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text, #1a1a2e);
+    letter-spacing: 3px;
+}
+
+.sc-match-vs {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #8b95a5;
+    letter-spacing: 2px;
+}
+
+.sc-result-pill {
+    display: inline-block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+}
+.sc-result-win {
+    background: rgba(34, 197, 94, 0.12);
+    color: #16a34a;
+}
+.sc-result-draw {
+    background: rgba(245, 158, 11, 0.12);
+    color: #d97706;
+}
+.sc-result-lose {
+    background: rgba(239, 68, 68, 0.12);
+    color: #dc2626;
+}
+
+/* Match card header-btn */
+.sc-match-header-btn {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--color-border, #e5e7eb);
+    background: none;
+    color: var(--color-text, #1a1a2e);
+}
+.sc-match-header-btn:hover {
+    background: var(--color-light, #f3f4f6);
+}
+.sc-match-header-btn.sc-btn-primary {
+    background: var(--color-gold, #b08d2a);
+    color: #fff;
+    border-color: var(--color-gold, #b08d2a);
+}
+.sc-match-header-btn.sc-btn-primary:hover {
+    opacity: 0.9;
+}
+
+/* Match actions — bottom right */
+.sc-match-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border, #e5e7eb);
+    justify-content: flex-end;
+}
+
+.sc-match-actions .sc-btn-danger {
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    background: none;
+    color: #dc2626;
+}
+.sc-match-actions .sc-btn-danger:hover {
+    background: rgba(239, 68, 68, 0.06);
+}
+
+/* Goal scorers list */
+.sc-scorers-section {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border, #e5e7eb);
+}
+.sc-scorers-title {
+    display: inline-block;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #3b82f6;
+    border: 1.5px solid #3b82f6;
+    border-radius: 6px;
+    padding: 2px 10px;
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+}
+.sc-scorers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.sc-scorer-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+}
+.sc-scorer-name {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--color-text, #1a1a2e);
+}
+.sc-scorer-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+.sc-scorer-goals {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #3b82f6;
+}
+.sc-no-scorers {
+    font-size: 0.85rem;
+    color: #8b95a5;
+    text-align: center;
+    padding: 4px 0;
+}
+
+/* Empty sidebar card */
+.sc-empty-card {
+    background: var(--color-surface, #fff);
+    border-radius: 12px;
+    border: 1px solid var(--color-border, #e5e7eb);
+    padding: 28px 18px;
+    text-align: center;
+    color: #8b95a5;
+    font-size: 0.85rem;
+}
+.sc-empty-card .sc-empty-register {
+    margin-top: 12px;
+    background: var(--color-gold, #b08d2a);
+    color: #fff;
+    border: none;
+    padding: 7px 18px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ===== Monthly Schedule Card ===== */
+.sc-monthly-card {
+    background: var(--color-surface, #fff);
+    border-radius: 12px;
+    border: 1px solid var(--color-border, #e5e7eb);
+    overflow: hidden;
+}
+
+.sc-monthly-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--color-text, #1a1a2e);
+    padding: 14px 18px 10px;
+}
+
+.sc-monthly-list {
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.sc-monthly-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: background 0.12s;
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+}
+.sc-monthly-item:last-child {
+    border-bottom: none;
+}
+.sc-monthly-item:hover {
+    background: var(--color-light, #f3f4f6);
+}
+
+.sc-monthly-bar {
+    width: 3px;
+    height: 32px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.sc-monthly-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.sc-monthly-opponent {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text, #1a1a2e);
+}
+
+.sc-monthly-sub {
+    font-size: 0.75rem;
+    color: #8b95a5;
+    margin-top: 1px;
+}
+
+.sc-monthly-badge {
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+
+.sc-monthly-empty {
+    padding: 20px 18px;
+    text-align: center;
+    color: #8b95a5;
+    font-size: 0.82rem;
+}

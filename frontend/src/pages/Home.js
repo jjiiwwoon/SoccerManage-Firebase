@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 import { getMatches } from '../api/matchApi';
 import { getMembers } from '../api/memberApi';
 import { getTeamInfo, updateTeamInfo, uploadTeamPhoto, deleteTeamPhoto } from '../api/teamInfoApi';
+import { getResult, getResultLabel, getDday } from '../utils/matchUtils';
 
 function Home() {
     const [matches, setMatches] = useState([]);
@@ -76,29 +77,6 @@ function Home() {
     const draws = completedMatches.filter(m => m.ourScore === m.opponentScore).length;
     const losses = completedMatches.filter(m => m.ourScore < m.opponentScore).length;
     const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(1) : '0.0';
-
-    // 결과 판별
-    function getResult(match) {
-        if (match.ourScore > match.opponentScore) return 'win';
-        if (match.ourScore === match.opponentScore) return 'draw';
-        return 'lose';
-    }
-
-    function getResultLabel(match) {
-        const r = getResult(match);
-        if (r === 'win') return '승';
-        if (r === 'draw') return '무';
-        return '패';
-    }
-
-    // D-day 계산
-    function getDday(dateStr) {
-        const matchDate = new Date(dateStr);
-        matchDate.setHours(0, 0, 0, 0);
-        const diff = Math.ceil((matchDate - today) / (1000 * 60 * 60 * 24));
-        if (diff === 0) return 'D-DAY';
-        return `D-${diff}`;
-    }
 
     // 날짜 포맷
     function formatDate(dateStr) {
@@ -503,7 +481,7 @@ function Home() {
                                     <span>{match.opponent}</span>
                                 </div>
                                 <span className={`result-badge result-${getResult(match)}`}>
-                                    {getResultLabel(match)}
+                                    {getResultLabel(getResult(match))}
                                 </span>
                             </div>
                         ))

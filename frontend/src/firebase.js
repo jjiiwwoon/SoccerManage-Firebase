@@ -1,13 +1,7 @@
-/**
- * ====================================
- * 파일: firebase.js
- * 위치: frontend/src/
- * 기능: Firebase 초기화 설정
- * ====================================
- */
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { getAnalytics } from "firebase/analytics";   // ← 이 줄 추가
 
 const firebaseConfig = {
     apiKey: "AIzaSyDhM4R2q2ueCpErm9wTiKwNQm78iH-E4SQ",
@@ -22,4 +16,5 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+export const analytics = getAnalytics(app);   // ← 이 줄 추가
 export default app;

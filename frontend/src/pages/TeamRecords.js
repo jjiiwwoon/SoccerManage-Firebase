@@ -7,6 +7,7 @@
  */
 import React, { useState, useEffect } from 'react';
 import { getMatches } from '../api/matchApi';
+import { getResult, getResultLabel } from '../utils/matchUtils';
 
 function TeamRecords() {
     const [matches, setMatches] = useState([]);
@@ -26,18 +27,6 @@ function TeamRecords() {
         }
         fetchData();
     }, []);
-
-    function getResult(match) {
-        if (match.ourScore > match.opponentScore) return 'win';
-        if (match.ourScore === match.opponentScore) return 'draw';
-        return 'lose';
-    }
-
-    function getResultLabel(result) {
-        if (result === 'win') return '승';
-        if (result === 'draw') return '무';
-        return '패';
-    }
 
     const completedMatches = matches.filter(m => m.ourScore != null && m.opponentScore != null);
 

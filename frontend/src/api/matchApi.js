@@ -76,6 +76,12 @@ export async function deleteMatch(id) {
 
 // ========== 개인 스탯 API ==========
 
+// 전체 스탯 일괄 조회 (N+1 쿼리 방지)
+export async function getAllMatchStats() {
+    const snapshot = await getDocs(collection(db, MATCH_STATS));
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
 // 특정 경기의 스탯 목록
 export async function getMatchStats(matchId) {
     const q = query(collection(db, MATCH_STATS), where('matchId', '==', matchId));
