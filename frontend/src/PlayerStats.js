@@ -13,7 +13,7 @@
  * - 클릭 시 하단 상세 패널 (경기별 기록 포함)
  * - 탑 스코어러 골드 하이라이트
  * - CSS 클래스 접두사: ps-
- * - [UI 리디자인] Sky & Cobalt: 1위 코발트 배지, 출석률 막대, 하늘색 상세 패널
+ * - [UI 리디자인] Navy & Volt: 1위 볼트 배지, 출석률 막대, 네이비 상세 패널
  *   (데이터 조회/정렬/필터 로직은 변경 없음)
  */
 import React, { useState, useEffect } from 'react';
@@ -564,8 +564,8 @@ function PlayerStats() {
                     background: #f7f8fb;
                 }
                 .ps-row-selected {
-                    background: var(--color-sky-soft) !important;
-                    box-shadow: inset 3px 0 0 var(--color-cobalt);
+                    background: var(--color-primary-soft) !important;
+                    box-shadow: inset 3px 0 0 var(--color-primary);
                 }
 
                 /* Columns */
@@ -587,8 +587,8 @@ function PlayerStats() {
                     color: var(--color-text-muted);
                 }
                 .ps-rank-badge.is-top {
-                    background: var(--color-cobalt);
-                    color: #ffffff;
+                    background: var(--color-volt);
+                    color: var(--color-primary);
                 }
                 .ps-col-player {
                     display: flex;
@@ -651,7 +651,7 @@ function PlayerStats() {
                 .ps-att-fill {
                     height: 100%;
                     border-radius: 6px;
-                    background: var(--color-cobalt);
+                    background: var(--color-primary);
                 }
                 .ps-att-value {
                     width: 40px;
@@ -681,8 +681,8 @@ function PlayerStats() {
                     padding: 26px 32px;
                     gap: 20px;
                     flex-wrap: wrap;
-                    background: var(--color-sky);
-                    color: var(--color-ink);
+                    background: var(--color-primary);
+                    color: #ffffff;
                 }
                 .ps-detail-avatar-section {
                     display: flex;
@@ -690,7 +690,7 @@ function PlayerStats() {
                     gap: 18px;
                 }
                 .ps-detail-avatar-section .ps-player-avatar {
-                    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.6);
+                    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
                     background: #ffffff !important;
                 }
                 .ps-detail-name-section {
@@ -706,13 +706,13 @@ function PlayerStats() {
                 .ps-detail-player-name {
                     font-size: 24px;
                     font-weight: 900;
-                    color: var(--color-ink);
+                    color: #ffffff;
                 }
                 .ps-detail-title {
                     font-family: var(--font-display);
                     font-size: 16px;
                     font-weight: 600;
-                    color: rgba(11, 42, 102, 0.7);
+                    color: rgba(255, 255, 255, 0.65);
                 }
                 .ps-detail-big-stats {
                     display: flex;
@@ -725,15 +725,15 @@ function PlayerStats() {
                     font-family: var(--font-display);
                     font-size: 34px;
                     font-weight: 700;
-                    color: var(--color-ink);
+                    color: #ffffff;
                     line-height: 1;
                 }
                 .ps-detail-stat-value.is-volt {
-                    color: var(--color-cobalt);
+                    color: var(--color-volt);
                 }
                 .ps-detail-stat-label {
                     font-size: 12px;
-                    color: rgba(11, 42, 102, 0.72);
+                    color: rgba(255, 255, 255, 0.65);
                     margin-top: 6px;
                 }
 

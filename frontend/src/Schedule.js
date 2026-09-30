@@ -3,7 +3,7 @@
  * 파일: Schedule.js (디자인 캔버스 리뉴얼)
  * 위치: frontend/src/pages/Schedule.js
  * 기능: 일정 페이지 - 캘린더(도트) + 사이드바(경기카드/월간일정) + 일정 등록 + 결과 입력
- * [UI 리디자인] Sky & Cobalt: 캘린더 경기 표시, 하늘색 매치 카드, 이번 달 일정 표시
+ * [UI 리디자인] Navy & Volt: 캘린더 경기 칩, 네이비 매치 카드, 이번 달 일정 표시
  *   (일정 등록/수정/삭제/결과 입력 로직은 변경 없음)
  * ====================================
  */
@@ -143,7 +143,7 @@ function Schedule() {
     }
 
     function getDotColor(match) {
-        if (match.ourScore == null || match.opponentScore == null) return '#2f5bff'; // upcoming = cobalt
+        if (match.ourScore == null || match.opponentScore == null) return '#0e1733'; // upcoming = navy
         if (match.ourScore > match.opponentScore) return '#16a34a'; // win
         if (match.ourScore === match.opponentScore) return '#d97706'; // draw
         return '#e5484d'; // lose
@@ -153,7 +153,7 @@ function Schedule() {
         if (result === 'win') return '#16a34a';
         if (result === 'draw') return '#d97706';
         if (result === 'lose') return '#e5484d';
-        return '#2f5bff';
+        return '#0e1733';
     }
 
 
@@ -543,7 +543,7 @@ function Schedule() {
                 >
                     <span className="sc-cal-day" style={{ color: getDayColor(dayOfWeek) }}>{day}</span>
                     {match && (
-                        <div className="sc-cal-match-info">
+                        <div className={`sc-cal-chip ${result === 'upcoming' ? 'is-upcoming' : ''}`}>
                             {result === 'upcoming' ? (
                                 <>
                                     <span className="sc-cal-match-label">Match Day</span>
@@ -723,7 +723,7 @@ function Schedule() {
                             }
 
                             const badgeStyle = isUpcoming
-                                ? { background: '#e6f3ff', color: '#1f47e6' }
+                                ? { background: '#eef1f8', color: '#0e1733' }
                                 : { background: `${barColor}18`, color: barColor };
 
                             return (
@@ -798,7 +798,7 @@ function Schedule() {
                     {/* Legend */}
                     <div className="sc-cal-legend">
                         <div className="sc-legend-item">
-                            <div className="sc-legend-dot" style={{ background: '#2f5bff' }}></div>
+                            <div className="sc-legend-dot" style={{ background: '#0e1733' }}></div>
                             예정 경기
                         </div>
                         <div className="sc-legend-item">

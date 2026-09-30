@@ -12,6 +12,8 @@
  * 4. 퀵 링크 5열 배치
  * 5. 다가오는 경기 + 최근 경기 결과 2열 나란히 배치
  * 6. 링크 편집: 고정 3개 → 동적 추가/삭제 (linksJson 활용)
+ * 7. [UI 리디자인] Sky & Cobalt: 하늘색 히어로, 최근 폼, 바로가기 요약 정보, D-day 카드
+ *    (데이터 조회/저장 로직은 변경 없음)
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
@@ -78,10 +80,26 @@ function Home() {
     const losses = completedMatches.filter(m => m.ourScore < m.opponentScore).length;
     const winRate = totalMatches > 0 ? ((wins / totalMatches) * 100).toFixed(1) : '0.0';
 
+    // [UI] 포지션별 인원 (바로가기 카드 요약용)
+    const positionCounts = ['GK', 'DF', 'MF', 'FW']
+        .map(pos => `${pos}${members.filter(m => m.position === pos).length}`)
+        .join(' ');
+
     // 날짜 포맷
     function formatDate(dateStr) {
         const d = new Date(dateStr);
         return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    // [UI] 요일 (예: '토')
+    function getWeekday(dateStr) {
+        return ['일', '월', '화', '수', '목', '금', '토'][new Date(dateStr).getDay()];
+    }
+
+    // [UI] 짧은 날짜 (예: '10.03 (토)')
+    function formatShortDate(dateStr) {
+        const d = new Date(dateStr);
+        return `${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} (${getWeekday(dateStr)})`;
     }
 
     // linksJson 파싱 헬퍼
@@ -185,7 +203,7 @@ function Home() {
     return (
         <div className="home-page">
             {/* ===== 팀 소개 영역 ===== */}
-            <div className="team-intro-section">
+            <div className={`team-intro-section${editMode ? ' is-editing' : ''}`}>
                 {/* 팀 사진 */}
                 <div className="team-photo-area">
                     {teamInfo?.teamPhoto ? (
@@ -237,15 +255,16 @@ function Home() {
                         <>
                             <div className="team-intro-header">
                                 <div>
+                                    <div className="team-intro-eyebrow">Football Club</div>
                                     <h1 className="team-intro-name">
                                         {teamInfo?.teamName || '창우FC'}
                                     </h1>
                                     <div className="team-badges">
-                                        <span className="team-badge team-badge-muted">{members.length}명</span>
+                                        <span className="team-badge team-badge-muted">선수 {members.length}명</span>
                                     </div>
                                 </div>
                                 <button
-                                    className="btn btn-sm btn-outline"
+                                    className="btn btn-sm btn-hero"
                                     onClick={startEdit}
                                 >
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'4px',verticalAlign:'middle'}}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
@@ -271,20 +290,38 @@ function Home() {
                                     <span className="mini-stat-label">경기</span>
                                 </div>
                                 <div className="mini-stat">
-                                    <span className="mini-stat-number" style={{ color: 'var(--color-win)' }}>{wins}</span>
+                                    <span className="mini-stat-number is-win">{wins}</span>
                                     <span className="mini-stat-label">승</span>
                                 </div>
                                 <div className="mini-stat">
-                                    <span className="mini-stat-number" style={{ color: 'var(--color-draw)' }}>{draws}</span>
+                                    <span className="mini-stat-number is-draw">{draws}</span>
                                     <span className="mini-stat-label">무</span>
                                 </div>
                                 <div className="mini-stat">
-                                    <span className="mini-stat-number" style={{ color: 'var(--color-lose)' }}>{losses}</span>
+                                    <span className="mini-stat-number is-lose">{losses}</span>
                                     <span className="mini-stat-label">패</span>
                                 </div>
                                 <div className="mini-stat">
-                                    <span className="mini-stat-number" style={{ color: 'var(--color-gold)' }}>{winRate}%</span>
+                                    <span className="mini-stat-number is-rate">{winRate}<small>%</small></span>
                                     <span className="mini-stat-label">승률</span>
+                                </div>
+                                <div className="mini-stat">
+                                    {recentResults.length > 0 ? (
+                                        <div className="form-guide">
+                                            {recentResults.map(match => (
+                                                <span
+                                                    key={match.id}
+                                                    className={`form-guide-item ${getResult(match)}`}
+                                                    title={`${formatDate(match.matchDate)} vs ${match.opponent}`}
+                                                >
+                                                    {getResultLabel(getResult(match))}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <span className="form-guide-empty">-</span>
+                                    )}
+                                    <span className="mini-stat-label">최근 폼</span>
                                 </div>
                             </div>
                         </>
@@ -372,39 +409,64 @@ function Home() {
             {/* ===== 퀵 링크 (5열) ===== */}
             <div className="quick-links">
                 <Link to="/team-records" className="quick-link-card">
-                    <div className="quick-link-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                    <div className="quick-link-top">
+                        <div className="quick-link-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18"/><path d="M8 16v-5"/><path d="M13 16V8"/><path d="M18 16v-3"/></svg>
+                        </div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
                     </div>
-                    <div className="quick-link-title">팀기록</div>
-                    <div className="quick-link-desc">팀 전적 및 경기 결과</div>
+                    <div>
+                        <div className="quick-link-title">팀기록</div>
+                        <div className="quick-link-desc">{totalMatches}전 {wins}승 {draws}무 {losses}패</div>
+                    </div>
                 </Link>
                 <Link to="/player-stats" className="quick-link-card">
-                    <div className="quick-link-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <div className="quick-link-top">
+                        <div className="quick-link-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>
+                        </div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
                     </div>
-                    <div className="quick-link-title">개인기록</div>
-                    <div className="quick-link-desc">선수별 상세 기록</div>
+                    <div>
+                        <div className="quick-link-title">개인기록</div>
+                        <div className="quick-link-desc">골 · 도움 · 출석률 순위</div>
+                    </div>
                 </Link>
                 <Link to="/squad" className="quick-link-card">
-                    <div className="quick-link-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <div className="quick-link-top">
+                        <div className="quick-link-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        </div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
                     </div>
-                    <div className="quick-link-title">스쿼드</div>
-                    <div className="quick-link-desc">팀원 관리</div>
+                    <div>
+                        <div className="quick-link-title">스쿼드</div>
+                        <div className="quick-link-desc">{members.length}명 · {positionCounts}</div>
+                    </div>
                 </Link>
                 <Link to="/schedule" className="quick-link-card">
-                    <div className="quick-link-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <div className="quick-link-top">
+                        <div className="quick-link-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+                        </div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
                     </div>
-                    <div className="quick-link-title">일정</div>
-                    <div className="quick-link-desc">경기 일정 캘린더</div>
+                    <div>
+                        <div className="quick-link-title">일정</div>
+                        <div className="quick-link-desc">{nextMatch ? `다음 경기 ${formatShortDate(nextMatch.matchDate)}` : '예정된 경기 없음'}</div>
+                    </div>
                 </Link>
                 <Link to="/gallery" className="quick-link-card">
-                    <div className="quick-link-icon">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    <div className="quick-link-top">
+                        <div className="quick-link-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        </div>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>
                     </div>
-                    <div className="quick-link-title">갤러리</div>
-                    <div className="quick-link-desc">사진 모음</div>
+                    <div>
+                        <div className="quick-link-title">갤러리</div>
+                        <div className="quick-link-desc">사진 · 동영상 모음</div>
+                    </div>
                 </Link>
             </div>
 
@@ -412,18 +474,21 @@ function Home() {
             <div className="home-matches-grid">
                 {/* 다가오는 경기 */}
                 <div className="card home-match-card">
-                    <div className="card-gold-line"></div>
-                    <div className="card-title">다가오는 경기</div>
+                    <div className="home-card-header">
+                        <div className="card-title">다가오는 경기</div>
+                        <Link to="/schedule" className="home-card-link">일정 보기 →</Link>
+                    </div>
                     {nextMatch ? (
                         <div className="upcoming-match-content">
-                            <div className="upcoming-dday">
-                                <span className="dday-badge">{getDday(nextMatch.matchDate)}</span>
+                            <div className="dday-badge">
+                                {getDday(nextMatch.matchDate)}
+                                <small>Matchday</small>
                             </div>
                             <div className="upcoming-match-info">
                                 <div className="upcoming-date">
-                                    {formatDate(nextMatch.matchDate)}
+                                    {formatDate(nextMatch.matchDate)} ({getWeekday(nextMatch.matchDate)})
                                     {nextMatch.matchTime && (
-                                        <span className="upcoming-time"> {nextMatch.matchTime}</span>
+                                        <span className="upcoming-time">{nextMatch.matchTime}</span>
                                     )}
                                 </div>
                                 <div className="upcoming-teams">
@@ -433,12 +498,12 @@ function Home() {
                                 </div>
                                 {nextMatch.location && (
                                     <div className="upcoming-location">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'4px',verticalAlign:'middle'}}><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                                         {nextMatch.location}
                                     </div>
                                 )}
                                 {nextMatch.memo && (
-                                    <div className="upcoming-location" style={{ marginTop: '4px', color: 'var(--color-text-light)' }}>
+                                    <div className="upcoming-memo">
                                         {nextMatch.memo}
                                     </div>
                                 )}
@@ -456,11 +521,10 @@ function Home() {
                 </div>
 
                 {/* 최근 경기 결과 */}
-                <div className="card home-match-card">
-                    <div className="card-gold-line"></div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                        <div className="card-title" style={{ marginBottom: 0 }}>최근 경기 결과</div>
-                        <Link to="/team-records" style={{ color: 'var(--color-gold)', fontSize: '0.8rem' }}>
+                <div className="card home-match-card" style={{ paddingBottom: '12px' }}>
+                    <div className="home-card-header" style={{ marginBottom: '8px' }}>
+                        <div className="card-title">최근 경기 결과</div>
+                        <Link to="/team-records" className="home-card-link">
                             전체 보기 →
                         </Link>
                     </div>
@@ -474,9 +538,9 @@ function Home() {
                                     {formatDate(match.matchDate)}
                                 </div>
                                 <div className="match-teams-col">
-                                    <span style={{ fontWeight: 600 }}>창우FC</span>
+                                    <span style={{ fontWeight: 700 }}>창우FC</span>
                                     <span className="match-score">
-                                        {match.ourScore} - {match.opponentScore}
+                                        {match.ourScore} : {match.opponentScore}
                                     </span>
                                     <span>{match.opponent}</span>
                                 </div>

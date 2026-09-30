@@ -26,10 +26,10 @@ import { getPositionLabel, getPositionClass } from '../utils/positionUtils';
 
 // Squad 페이지 전용 포지션 색상 (디자인 시스템 색상)
 const SQUAD_COLORS = {
-    GK: '#b08d2a',
-    DF: '#2563eb',
-    MF: '#16a34a',
-    FW: '#dc2626',
+    GK: '#6d28d9',
+    DF: '#1d4ed8',
+    MF: '#047857',
+    FW: '#be123c',
 };
 
 function getSquadPositionColor(position) {
@@ -267,14 +267,15 @@ function Squad() {
         <div className="squad-page">
             <div className="page-header">
                 <div>
+                    <div className="page-eyebrow">Squad &middot; {members.length} Players</div>
                     <h1 className="page-title">스쿼드</h1>
-                    <div className="page-subtitle">SQUAD &middot; {members.length}명</div>
                 </div>
                 <button
                     className="btn btn-gold"
                     onClick={() => setShowForm(true)}
                 >
-                    + 선수 등록
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                    선수 등록
                 </button>
             </div>
 
@@ -282,7 +283,7 @@ function Squad() {
             <div className="squad-toolbar">
                 <div className="filter-tabs">
                     {[
-                        { key: 'all', label: 'ALL' },
+                        { key: 'all', label: '전체' },
                         { key: 'gk', label: 'GK' },
                         { key: 'df', label: 'DF' },
                         { key: 'mf', label: 'MF' },
@@ -293,15 +294,18 @@ function Squad() {
                             className={getFilterTabClass(tab.key)}
                             onClick={() => setFilter(tab.key)}
                         >
-                            {tab.label} ({getPositionCount(tab.key)})
+                            {tab.label}
+                            <span className="filter-tab-count">{getPositionCount(tab.key)}</span>
                         </button>
                     ))}
                 </div>
                 <div className="squad-search">
+                    <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
                     <input
                         type="text"
                         className="search-input"
-                        placeholder="🔍 이름 또는 등번호 검색"
+                        placeholder="이름 또는 등번호 검색"
+                        aria-label="선수 검색"
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                     />
@@ -332,15 +336,16 @@ function Squad() {
                                 key={member.id}
                                 className="sq-player-card"
                                 onClick={() => openEditModal(member)}
-                                style={{
-                                    cursor: 'pointer',
-                                    borderLeft: `3px solid ${posColor}`,
-                                }}
+                                style={{ cursor: 'pointer' }}
                             >
+                                {member.backNumber && (
+                                    <span className="sq-bg-number" aria-hidden="true">{member.backNumber}</span>
+                                )}
                                 <div
                                     className="sq-player-avatar"
                                     style={{
-                                        background: `linear-gradient(135deg, ${posColor}33, ${posColor}11)`,
+                                        background: `${posColor}1a`,
+                                        color: posColor,
                                     }}
                                 >
                                     {member.profilePhoto ? (
@@ -350,26 +355,23 @@ function Squad() {
                                             className="sq-player-avatar-img"
                                         />
                                     ) : (
-                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        member.name ? member.name.charAt(0) : '?'
                                     )}
                                 </div>
                                 <div className="sq-player-info">
                                     <div className="sq-player-name-row">
-                                        <span
-                                            className="sq-back-number"
-                                            style={{ color: `${posColor}26` }}
-                                        >
-                                            No.{member.backNumber || '-'}
+                                        <span className="sq-back-number">
+                                            {member.backNumber || '-'}
                                         </span>
                                         <span className="sq-player-name">{member.name}</span>
-                                    </div>
-                                    <div className="sq-player-meta">
                                         <span className={`badge ${getPositionClass(member.position)}`}>
                                             {getPositionLabel(member.position)}
                                         </span>
-                                        <span className="sq-mini-stats">
-                                            출전 {stats.matches} &middot; 골 {stats.goals} &middot; 도움 {stats.assists}
-                                        </span>
+                                    </div>
+                                    <div className="sq-player-meta">
+                                        <span className="sq-mini-stat">출전<b>{stats.matches}</b></span>
+                                        <span className="sq-mini-stat">골<b>{stats.goals}</b></span>
+                                        <span className="sq-mini-stat">도움<b>{stats.assists}</b></span>
                                     </div>
                                 </div>
                             </div>

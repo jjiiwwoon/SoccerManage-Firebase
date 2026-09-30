@@ -120,20 +120,23 @@ function Gallery() {
         <div className="gallery-page">
             {/* 헤더 */}
             <div className="page-header">
-                <h1 className="page-title">갤러리</h1>
-                <div style={{ display: 'flex', gap: '8px' }}>
+                <div>
+                    <div className="page-eyebrow">Gallery</div>
+                    <h1 className="page-title">갤러리</h1>
+                </div>
+                <div style={{ display: 'flex', gap: '10px' }}>
                     <button
                         className="btn btn-gold"
                         onClick={() => setShowUploadModal(true)}
                     >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'4px',verticalAlign:'middle'}}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
                         사진 올리기
                     </button>
                     <button
-                        className="btn btn-dark"
+                        className="btn btn-outline"
                         onClick={() => setShowVideoModal(true)}
                     >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight:'4px',verticalAlign:'middle'}}><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="m16 10 6-3v10l-6-3"/></svg>
                         동영상 추가
                     </button>
                 </div>
@@ -150,8 +153,8 @@ function Gallery() {
                         {f === 'ALL' ? '전체' : f === 'PHOTO' ? '사진' : '동영상'}
                     </button>
                 ))}
-                <span style={{ marginLeft: 'auto', color: 'var(--color-text-muted)', fontSize: '0.85rem', alignSelf: 'center' }}>
-                    총 {items.length}개
+                <span style={{ marginLeft: 'auto', color: 'var(--color-text-muted)', fontSize: '0.88rem', alignSelf: 'center' }}>
+                    총 <b style={{ fontFamily: 'var(--font-display)', fontSize: '1.05rem', color: 'var(--color-text)' }}>{items.length}</b>개
                 </span>
             </div>
 
@@ -159,7 +162,7 @@ function Gallery() {
             {loading ? (
                 <div className="loading">로딩 중...</div>
             ) : items.length === 0 ? (
-                <div className="card" style={{ textAlign: 'center', padding: '60px 20px' }}>
+                <div className="card" style={{ textAlign: 'center', padding: '60px 20px', cursor: 'pointer' }} onClick={() => setShowUploadModal(true)}>
                     <div style={{ marginBottom: '16px', color: 'var(--color-text-muted)' }}>
                         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                     </div>
@@ -200,6 +203,7 @@ function Gallery() {
                                     <div className="gallery-play-icon">▶</div>
                                 </div>
                             )}
+                            <span className="gallery-type-tag">{item.type === 'PHOTO' ? '사진' : '동영상'}</span>
                             <div className="gallery-item-info">
                                 <span className="gallery-item-title">
                                     {item.title || (item.type === 'PHOTO' ? '사진' : '동영상')}
@@ -210,6 +214,19 @@ function Gallery() {
                             </div>
                         </div>
                     ))}
+
+                    {/* 추가 타일 (사진 올리기 모달 열기) */}
+                    <button
+                        type="button"
+                        className="gallery-add-tile"
+                        onClick={() => setShowUploadModal(true)}
+                    >
+                        <span className="gallery-add-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                        </span>
+                        <span className="gallery-add-title">사진 추가</span>
+                        <span className="gallery-add-desc">경기 사진을 올려보세요</span>
+                    </button>
                 </div>
             )}
 
@@ -240,7 +257,7 @@ function Gallery() {
                                 <input
                                     type="text"
                                     className="form-input"
-                                    placeholder="예: 2024 시즌 개막전"
+                                    placeholder="예: 2026 시즌 개막전"
                                     value={photoTitle}
                                     onChange={e => setPhotoTitle(e.target.value)}
                                 />

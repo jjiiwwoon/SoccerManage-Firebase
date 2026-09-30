@@ -8,10 +8,10 @@
 
 // 포지션별 색상 매핑
 export const POSITION_COLORS = {
-    GK: '#E8B931',
-    DF: '#4A90D9',
-    MF: '#50B86C',
-    FW: '#E85D5D',
+    GK: '#6D28D9',
+    DF: '#1D4ED8',
+    MF: '#047857',
+    FW: '#BE123C',
 };
 
 /**

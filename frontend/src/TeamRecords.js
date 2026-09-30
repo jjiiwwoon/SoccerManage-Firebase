@@ -3,7 +3,7 @@
  * 파일: TeamRecords.js (디자인 캔버스 매칭)
  * 위치: frontend/src/pages/TeamRecords.js
  * 기능: 팀 전적 요약 + 경기 결과 테이블
- * [UI 리디자인] Sky & Cobalt: 강조 카드, 비율 막대, 득실차 열, 필터별 개수
+ * [UI 리디자인] Navy & Volt: 강조 카드, 비율 막대, 득실차 열, 필터별 개수
  *   (데이터 조회/계산 로직은 변경 없음)
  * ====================================
  */
@@ -111,9 +111,9 @@ function TeamRecords() {
                             className="tr-ratio-bar"
                             title={`${wins}승 ${draws}무 ${losses}패`}
                         >
-                            {wins > 0 && <span style={{ flexGrow: wins, background: '#6ee7a0' }} />}
-                            {draws > 0 && <span style={{ flexGrow: draws, background: '#fcd34d' }} />}
-                            {losses > 0 && <span style={{ flexGrow: losses, background: '#ff9aa2' }} />}
+                            {wins > 0 && <span style={{ flexGrow: wins, background: 'var(--color-win-text)' }} />}
+                            {draws > 0 && <span style={{ flexGrow: draws, background: 'var(--color-draw-text)' }} />}
+                            {losses > 0 && <span style={{ flexGrow: losses, background: 'var(--color-lose-text)' }} />}
                         </div>
                     )}
                 </div>
@@ -219,7 +219,7 @@ function TeamRecords() {
                         ].map(tab => (
                             <button
                                 key={tab.key}
-                                className={`filter-tab filter-tab-${tab.key} ${filter === tab.key ? 'active' : ''}`}
+                                className={`filter-tab ${filter === tab.key ? 'active' : ''}`}
                                 onClick={() => setFilter(tab.key)}
                             >
                                 {tab.label}

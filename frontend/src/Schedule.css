@@ -1,6 +1,6 @@
 /* ====================================
  * Schedule.css
- * 일정 페이지 전용 스타일 (Sky & Cobalt 리디자인)
+ * 일정 페이지 전용 스타일 (Navy & Volt 리디자인)
  * ==================================== */
 
 /* ===== Layout ===== */
@@ -116,53 +116,35 @@
     font-weight: 700;
 }
 
-/* 경기 정보: 날짜 아래 남은 공간의 정중앙 (박스 없이 글자만) */
-.sc-cal-match-info {
-    flex: 1;
-    width: 100%;
+/* 경기가 있는 날의 칩 */
+.sc-cal-chip {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
     gap: 2px;
-    position: relative;
-    min-height: 0;
+    background: #ffffff;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 6px 7px;
+    min-width: 0;
 }
-
-/* 예정 경기: 'Match Day'는 공간 맨 위 가운데에 고정 */
-.sc-cal-match-label {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    text-align: center;
-    font-family: var(--font-display);
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.4px;
-    line-height: 1.2;
-    color: var(--color-link);
-}
-
-/* vs 표시 */
-.sc-cal-match-vs {
-    font-family: var(--font-display);
-    font-size: 0.75rem;
-    font-weight: 600;
-    line-height: 1.1;
-    color: #8a93a8;
+.sc-cal-chip.is-upcoming {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
 }
 
 .sc-cal-match-opponent {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: var(--color-text);
     line-height: 1.2;
-    text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+}
+.sc-cal-chip.is-upcoming .sc-cal-match-opponent {
+    color: #ffffff;
 }
 
 .sc-cal-match-result {
@@ -171,6 +153,31 @@
     line-height: 1.4;
     border-radius: 5px;
     padding: 0 6px;
+    flex-shrink: 0;
+}
+/* 예정 경기 상단 라벨 */
+.sc-cal-match-label {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    line-height: 1.2;
+    color: var(--color-volt);
+}
+
+/* vs 표시 */
+.sc-cal-match-vs {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 600;
+    line-height: 1.1;
+    color: #8a93a8;
+}
+.sc-cal-chip.is-upcoming .sc-cal-match-vs {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.sc-cal-match-result {
     margin-top: 2px;
 }
 
@@ -212,10 +219,10 @@
     overflow: hidden;
 }
 
-/* 하늘색 상단 영역 (날짜 · 팀 · 스코어) */
+/* 네이비 상단 영역 (날짜 · 팀 · 스코어) */
 .sc-match-hero {
-    background: var(--color-sky);
-    color: var(--color-ink);
+    background: var(--color-primary);
+    color: #ffffff;
     padding: 22px 24px;
 }
 
@@ -231,15 +238,14 @@
     font-weight: 600;
     letter-spacing: 2.4px;
     text-transform: uppercase;
-    color: var(--color-ink);
-    opacity: 0.75;
+    color: var(--color-volt);
 }
 
 .sc-match-dday {
     font-family: var(--font-display);
     font-size: 1.38rem;
     font-weight: 700;
-    color: var(--color-cobalt);
+    color: var(--color-volt);
 }
 
 .sc-match-info-center {
@@ -248,7 +254,7 @@
 
 .sc-match-info-date {
     font-size: 0.94rem;
-    color: var(--color-ink);
+    color: #ffffff;
     font-weight: 500;
 }
 
@@ -257,7 +263,7 @@
     align-items: center;
     gap: 6px;
     font-size: 0.88rem;
-    color: rgba(11, 42, 102, 0.8);
+    color: rgba(255, 255, 255, 0.75);
     margin-top: 6px;
 }
 
@@ -292,7 +298,7 @@
 .sc-team-name {
     font-size: 1.19rem;
     font-weight: 900;
-    color: var(--color-ink);
+    color: #ffffff;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -301,7 +307,7 @@
 .sc-team-label {
     font-family: var(--font-display);
     font-size: 0.7rem;
-    color: rgba(11, 42, 102, 0.65);
+    color: rgba(255, 255, 255, 0.6);
     font-weight: 600;
     letter-spacing: 2px;
     margin-top: 2px;
@@ -321,7 +327,7 @@
     font-family: var(--font-display);
     font-size: 2.2rem;
     font-weight: 700;
-    color: var(--color-ink);
+    color: #ffffff;
     line-height: 1;
 }
 
@@ -329,7 +335,7 @@
     font-family: var(--font-display);
     font-size: 1.5rem;
     font-weight: 700;
-    color: rgba(11, 42, 102, 0.45);
+    color: rgba(255, 255, 255, 0.5);
 }
 
 .sc-result-pill {
@@ -370,12 +376,12 @@
     border-color: var(--color-primary);
 }
 .sc-match-header-btn.sc-btn-volt {
-    background: var(--color-cobalt);
-    border-color: var(--color-cobalt);
-    color: #ffffff;
+    background: var(--color-volt);
+    border-color: var(--color-volt);
+    color: var(--color-primary);
 }
 .sc-match-header-btn.sc-btn-volt:hover {
-    background: var(--color-cobalt-hover);
+    background: #c6ec35;
 }
 
 /* Match actions */
@@ -460,7 +466,7 @@
 }
 .sc-empty-card .sc-empty-register {
     margin-top: 12px;
-    background: var(--color-cobalt);
+    background: var(--color-primary);
     color: #fff;
     border: none;
     height: 40px;
